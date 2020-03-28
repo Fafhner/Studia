@@ -1,0 +1,7 @@
+req\facade\RequestFacade.class
+req\facade\RequestFacadeLocal.class
+req\backing\RequestsList.class
+com\mycompany\Request\resources\JavaEE8Resource.class
+req\facade\AbstractFacade.class
+req\entities\Request.class
+com\mycompany\Request\JAXRSConfiguration.class
