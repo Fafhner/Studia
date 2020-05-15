@@ -1,0 +1,5 @@
+service\AbstractFacade.class
+Complaints\Complaints\JAXRSConfiguration.class
+Complaints\Complaints\resources\JavaEE8Resource.class
+service\ComplaintFacadeREST.class
+entities\Complaint.class
