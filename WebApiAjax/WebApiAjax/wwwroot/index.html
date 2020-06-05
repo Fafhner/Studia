@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+    </script>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#calcjQuery").click(function () {
+                var x = $('#x').val();
+                var y = $('#y').val();
+                
+                $.ajax({
+                    url: 'api/math/', data: { 'x': x, 'y': y }, type: "GET", dataType: 'json',
+                    success: function (res) {
+                        $('#sum').html(res.sum)
+                        $('#difference').html(res.difference)
+                        $('#product').html(res.product)
+                        $('#quotient').html(res.quotient)
+                    }
+                });
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function () {
+            function onClickVanillaApi() {
+                var x = document.getElementById('x').value;
+                var y = document.getElementById('y').value;
+
+                var params = new URLSearchParams({ 'x': x, 'y': y }).toString();
+
+
+                var xmlHttp = new XMLHttpRequest();
+                xmlHttp.onreadystatechange = function () {
+                    if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                        var res = this.response
+                        console.log(res)
+                        document.getElementById('sum').innerHTML = res.sum
+                        document.getElementById('difference').innerHTML = res.difference
+                        document.getElementById('product').innerHTML = res.product
+                        document.getElementById('quotient').innerHTML = res.quotient
+
+                    }
+                }
+                xmlHttp.open("GET", 'api/math?' + params, true);
+                xmlHttp.responseType = 'json'
+                xmlHttp.send(null);
+            }
+            document.getElementById('calcVanilla').onclick = onClickVanillaApi;
+        }, false);
+    </script>
+    <div>
+        <h1>Calculations</h1>
+        <form>
+            x = <input type="text" id="x" />
+            y = <input type="text" id="y" />
+            <input type="button" id="calcjQuery" value="Call API (jQuery)" />
+            <input type="button" id="calcVanilla" value="Call API (vanilla JS)" />
+        </form>
+        x + y = <span id="sum"></span><br />
+        x - y = <span id="difference"></span><br />
+        x * y = <span id="product"></span><br />
+        x / y = <span id="quotient"></span><br />
+    </div>
+</body>
+</html>
