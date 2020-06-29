@@ -1,0 +1,62 @@
+﻿@model PizzeriaProject.Models.Items.PizzaItem
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Pizza "@Model.Name" details</h2>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name):
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Price):
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Size):
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Size.Size)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Dough):
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Dough.Type)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Ingredients):
+        </dt>
+        <dd class="col-sm-10">
+            <div>
+                <ul class="list-inline">
+                    @foreach (var ingredient in Model.Ingredients)
+                    {
+                        <li>@ingredient.Ingredient.Name (Quantity: @ingredient.Quantity)</li>
+
+                    }
+                </ul>
+            </div>
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>
+
+
+

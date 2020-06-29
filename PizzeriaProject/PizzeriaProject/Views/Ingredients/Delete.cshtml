@@ -1,0 +1,52 @@
+﻿@model PizzeriaProject.Models.Datas.PizzaIngredientData
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h2>Delete ingredient</h2>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <p>
+            <input type="checkbox" id="confirmCheckBox" />
+            <label class="col-form-label">Confirm deletion</label>
+        </p>
+        <input type="submit" value="Delete" class="btn btn-danger" id="confirmButton" disabled/>
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>
+
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var checkbox = document.getElementById("confirmCheckBox")
+            var confirmbtn = document.getElementById("confirmButton")
+
+            checkbox.onchange = function () {
+                confirmbtn.disabled = !this.checked;
+            };
+        });
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

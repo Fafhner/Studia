@@ -1,0 +1,93 @@
+﻿@model IEnumerable<PizzeriaProject.Models.Items.PizzaItem>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>List of pizzas</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table" id="pizzasTables">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Size)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Dough)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ingredients)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Size.Size)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Dough.Type)
+                </td>
+                <td>
+                    @foreach (var ingredient in item.Ingredients)
+                    {
+
+                        <p>@ingredient.Ingredient.Name (Quantity: @ingredient.Quantity) </p>
+                    }
+
+
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('#pizzasTables').DataTable({
+                "columns": [
+                    { "orderDataType": "dom-text" },
+                    { "orderDataType": "dom-text" },
+                    { "orderDataType": "dom-text" },
+                    { "orderDataType": "dom-text" },
+                    { "orderDataType": "dom-text" },
+                    null
+                ],
+                "columnDefs": [
+                    { "orderable": false, "targets": 5 }
+                ]
+            });
+
+        });
+
+    </script>
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
