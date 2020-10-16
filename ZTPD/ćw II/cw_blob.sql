@@ -59,17 +59,12 @@ DECLARE
  image BFILE,
  mime_type VARCHAR2(50));
  
-DECLARE
- cover_file BFILE :=BFILENAME('ZSBD_DIR','eagles.jpg');
- BEGIN
-   DBMS_LOB.FILEOPEN(cover_file, DBMS_LOB.file_readonly);
-    INSERT INTO temp_covers VALUES (65, cover_file, 'image/jpeg');
-   DBMS_LOB.FILECLOSE(cover_file);
-   COMMIT;
- END;
- /
- 
- SELECT movie_id, DBMS_LOB.GETLENGTH(image) filesize FROM temp_covers;
+
+
+INSERT INTO temp_covers VALUES (65, BFILENAME('ZSBD_DIR','eagles.jpg'), 'image/jpeg');
+commit;
+
+SELECT movie_id, DBMS_LOB.GETLENGTH(image) filesize FROM temp_covers;
  
  
  
