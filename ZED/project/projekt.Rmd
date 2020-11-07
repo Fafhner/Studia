@@ -1,0 +1,50 @@
+---
+title: "Projekt"
+author: "Rafał Morawski"
+date: "26 10 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+## R Markdown
+
+
+```{r Load_packages}
+library(dplyr)
+library(knitr)
+library(readxl)
+```
+
+```{r Load_data_as_df}
+
+orig_data_csv <- read_excel("wuhan_blood_sample_data_Jan_Feb_2020.xlsx")
+orig_data_df <- dplyr::as_tibble(orig_data_csv)
+```
+
+Ponieważ czesc wierszy, przynależy do konkretnego pacjenta, ale nie posiadaja one id, nalezy te id dopisac:
+
+
+```{r Restore_id}
+library(dplyr)
+row_ids <- dplyr::select(orig_data_df, PATIENT_ID) %>%
+           dplyr::mutate(ROW_ID = seq.int(nrow(orig_data_df)))
+filtered <- dplyr::filter(row_ids, !is.na(PATIENT_ID))
+times2 <- filtered['ROW_ID'][2:nrow(filtered),] - filtered['ROW_ID'][1:nrow(filtered)-1,]
+times2 <- dplyr::add_row(times2, nrow(row_ids)-filtered['ROW_ID'][nrow(filtered),]+1)
+
+new_ids <- rep(filtered[['PATIENT_ID']], times=times2[['ROW_ID']])
+
+new_data_df <- dplyr::mutate(orig_data_df, PATIENT_ID=new_ids)
+
+
+```
+
+Sprawdzenie czy istnieja puste kolumny:
+```{r }
+
+```
+
+
