@@ -1,0 +1,137 @@
+---
+title: "Projekt"
+author: "Rafał Morawski"
+date: "26 10 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+## R Markdown
+
+
+```{r Load_packages, warning=FALSE}
+library(dplyr)
+library(knitr)
+library(DescTools)
+library(readxl)
+library(caret)
+```
+
+```{r Load_data_as_df}
+
+orig_data_csv <- read_excel("wuhan_blood_sample_data_Jan_Feb_2020.xlsx")
+
+orig_data_df <- dplyr::as_tibble(orig_data_csv) %>% rename('Tumor necrosis factor-alpha'='Tumor necrosis factor\u03B1', 'Interleukin 1Beta'='Interleukin 1\u03B2',  'gamma-glutamyl transpeptidase'='\u03B3-glutamyl transpeptidase')
+
+
+```
+
+Ponieważ czesc wierszy, przynależy do konkretnego pacjenta, ale nie posiadaja one id, nalezy te id dopisac:
+
+
+```{r Restore_id}
+library(dplyr)
+row_ids <- dplyr::select(orig_data_df, PATIENT_ID) %>%
+           dplyr::mutate(ROW_ID = seq.int(nrow(orig_data_df)))
+filtered <- dplyr::filter(row_ids, !is.na(PATIENT_ID))
+times2 <- filtered['ROW_ID'][2:nrow(filtered),] - filtered['ROW_ID'][1:nrow(filtered)-1,]
+times2 <- dplyr::add_row(times2, nrow(row_ids)-filtered['ROW_ID'][nrow(filtered),]+1)
+
+new_ids <- rep(filtered[['PATIENT_ID']], times=times2[['ROW_ID']])
+
+new_data_df <- dplyr::mutate(orig_data_df, PATIENT_ID=new_ids)
+
+
+```
+
+```{r drop_empty_row, warning=FALSE}
+
+data_drop_empty_date <- new_data_df %>% 
+                        filter(!is.na(RE_DATE)) %>% 
+                        select(!c(RE_DATE, 'Admission time' , 'Discharge time'))
+data_process_mean <- data_drop_empty_date %>% 
+                     group_by(PATIENT_ID) %>%
+                     summarise(across(everything(), 
+                                      ~mean(.x, na.rm = TRUE), 
+                                      .names = "{.col}"))
+
+kable(summary(data_process_mean))
+
+data_replace_na <- data_process_mean
+data_replace_na[is.na(data_replace_na)] <- -1
+
+
+```
+
+
+```{r clear_data, warning=FALSE}
+
+data_clear <- ungroup(data_replace_na)
+data_clear$outcome = as.factor(data_clear$outcome)
+data_clear$gender = as.factor(data_clear$gender)
+
+```
+
+
+```{r  feature_selection}
+control <- rfeControl(functions=rfFuncs, method="cv", number=10)
+
+results <- rfe(data_clear[, c(2, 3, c(5:78))], data_clear[[4]], sizes=c(1:76), rfeControl=control)
+
+print(results)
+
+predictors(results)
+
+plot(results, type=c("g", "o"))
+```
+
+```{r select_features}
+
+data_clear_selected_features <- data_clear[, c(4)] %>% mutate(data_clear[predictors(results)])
+
+```
+
+
+
+```{r create_datasets}
+data_to_fit <- data_clear_selected_features
+
+set.seed(1111)
+
+
+partition_set <- caret::createDataPartition(data_to_fit$outcome, p = .66, list = FALSE)
+training <- data_to_fit[ partition_set,]
+testing  <- data_to_fit[-partition_set,]
+```
+
+
+
+```{r create_ctrl}
+
+fitControl <- trainControl(method = "repeatedcv",
+                           number = 2,
+                           repeats = 5)
+```
+
+
+```{r train}
+set.seed(2323)
+random_forest <- train(outcome ~ .,
+                 data = training, 
+                 method = "rf", 
+                 trControl = fitControl,
+                 preProc = c("center", "scale"),
+                 mtree = 10)
+random_forest
+```
+
+
+```{r test}
+rfClasses <- predict(random_forest, newdata = testing)
+confusionMatrix(data = rfClasses, testing$outcome)
+
+```
+
