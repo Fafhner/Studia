@@ -14,10 +14,13 @@ knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
 
 ```{r Load_packages, warning=FALSE}
 library(dplyr)
+library(tidyr)
 library(knitr)
 library(DescTools)
 library(readxl)
 library(caret)
+library(plotly)
+library(htmlwidgets)
 ```
 
 ```{r Load_data_as_df}
@@ -33,38 +36,260 @@ Ponieważ czesc wierszy, przynależy do konkretnego pacjenta, ale nie posiadaja 
 
 
 ```{r Restore_id}
-library(dplyr)
-row_ids <- dplyr::select(orig_data_df, PATIENT_ID) %>%
-           dplyr::mutate(ROW_ID = seq.int(nrow(orig_data_df)))
-filtered <- dplyr::filter(row_ids, !is.na(PATIENT_ID))
-times2 <- filtered['ROW_ID'][2:nrow(filtered),] - filtered['ROW_ID'][1:nrow(filtered)-1,]
-times2 <- dplyr::add_row(times2, nrow(row_ids)-filtered['ROW_ID'][nrow(filtered),]+1)
 
-new_ids <- rep(filtered[['PATIENT_ID']], times=times2[['ROW_ID']])
+new_data_df <- orig_data_df %>% fill(PATIENT_ID) %>% filter(!is.na(RE_DATE))
+group_by_id <- new_data_df %>% group_by(PATIENT_ID)
 
-new_data_df <- dplyr::mutate(orig_data_df, PATIENT_ID=new_ids)
+```
+
+%% Analiza danych
+
+
+```{r analysis_age}
+
+age_vector <- group_by_id %>% distinct(age) %>% ungroup()
+
+hist_age <- ggplot(data=age_vector, aes(x=age)) + 
+            geom_histogram(binwidth=1, stat = 'bin', fill='steelblue', color='black') + 
+            labs(x='Age', y='Count', title='Histogram of age') + 
+            scale_x_continuous(n.breaks = 20) +
+            scale_y_continuous(n.breaks = 10) + 
+            theme_classic()
+      
+
+ggplotly(hist_age)
+```
+
+
+
+
+
+```{r analysis_age2}
+hist_age_grouped <- ggplot(data=age_vector, aes(x=age)) + 
+            geom_histogram(breaks=c(min(age_vector$age), 40, 65, max(age_vector$age)), stat = 'bin', fill='steelblue', color='black') + 
+            labs(x='Age', y='Count', title='Histogram of age (grouped as Young, Middle Aged and Old)', position='dodge2') + 
+            scale_y_continuous(n.breaks = 10) +
+            scale_x_continuous(breaks=c(min(age_vector$age), 40, 65, max(age_vector$age))) + 
+            theme_classic() + 
+            annotate(geom='text', x=(40+min(age_vector$age))/2, y=10, label='Young') + 
+            annotate(geom='text', x=(65+40)/2, y=10, label='Mid') + 
+            annotate(geom='text', x=(max(age_vector$age)+65)/2, y=10, label='Old')
+      
+ggplotly(hist_age_grouped)
+
+age_data <- ggplot_build(hist_age_grouped)$data
+young = age_data[[1]]$y[1]
+mid = age_data[[1]]$y[2]
+old = age_data[[1]]$y[3]
+print(paste("Number of Young to all: ", young*100/(young+mid+old), '%'))
+print(paste("Number of Mid to all: ", mid*100/(young+mid+old), '%'))
+print(paste("Number of Old to all: ", old*100/(young+mid+old), '%'))
+```
+
+
+```{r analysis_gender}
+gender_vector <- group_by_id %>% distinct(gender) %>% ungroup()
+
+hist_gender <- ggplot(data=gender_vector, aes(x=gender)) + 
+            geom_histogram(binwidth=1, stat = 'bin', fill='steelblue', color='black') + 
+            labs(x='Outcome', y='Count', title='Histogram of outcome') + 
+            scale_x_continuous(breaks = c(1, 2), label=c('Male', 'Female')) + 
+            theme_classic()
+      
+ggplotly(hist_gender)
+
+
+gender_data <- ggplot_build(hist_gender)$data
+males = gender_data[[1]]$y[1]
+females = gender_data[[1]]$y[2]
+print(paste("Number of males to all: ", males*100/(males+females), '%'))
+print(paste("Number of females to all: ", females*100/(males+females), '%'))
 
 
 ```
 
-```{r drop_empty_row, warning=FALSE}
 
-data_drop_empty_date <- new_data_df %>% 
-                        filter(!is.na(RE_DATE)) %>% 
-                        select(!c(RE_DATE, 'Admission time' , 'Discharge time'))
-data_process_mean <- data_drop_empty_date %>% 
+
+```{r analysis_count}
+outcome_vector <- group_by_id %>% distinct(outcome) %>% ungroup()
+
+hist_outcome <- ggplot(data=outcome_vector, aes(x=outcome)) + 
+            geom_histogram(binwidth=1, stat = 'bin', fill='steelblue', color='black') + 
+            labs(x='Outcome', y='Count', title='Histogram of outcome') + 
+            scale_x_continuous(breaks = c(0, 1)) + 
+            theme_classic()
+
+ggplotly(hist_outcome)
+
+
+outcome_data <- ggplot_build(hist_outcome)$data
+v0 = outcome_data[[1]]$y[1]
+v1 = outcome_data[[1]]$y[2]
+print(paste("Number of 0 to all: ", v0*100/(v0+v1), '%'))
+print(paste("Number of 1 to all: ", v1*100/(v0+v1), '%'))
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r summarise_fill_empty_values, warning=FALSE}
+
+before_fill <- new_data_df[, c(1, 8:ncol(new_data_df))]
+
+after_fill  <- before_fill %>% group_by(PATIENT_ID) %>% fill(names(.), .direction = 'downup') %>% ungroup()
+
+kable(summary(before_fill[, 8:ncol(before_fill)]))
+kable(summary(after_fill[, 2:ncol(after_fill)]))
+
+```
+
+
+
+Stosunek liczby wystapien zawierajcej min(NaN) do cakowitej liczby wierszy przed wypelnieniem `r ( before_fill[2:ncol(before_fill)] %>% summarise_all(~sum(is.na(.x))) %>% min() )/nrow(before_fill)*100 `%
+
+Stosunek liczby wystapien zawierajcej max(NaN) do cakowitej liczby wierszy przed wypelnieniem `r ( before_fill[2:ncol(before_fill)] %>% summarise_all(~sum(is.na(.x))) %>% max() )/nrow(before_fill)*100 `%
+
+
+
+Stosunek liczby wystapien zawierajcej NaN do cakowitej liczby wierszy po wypelnieniu `r ( after_fill[2:ncol(after_fill)] %>% summarise_all(~sum(is.na(.x))) %>% min() )/nrow(after_fill)*100 `%
+
+
+Stosunek liczby wystapien zawierajcej NaN do cakowitej liczby wierszy po wypelnieniu `r ( after_fill[2:ncol(after_fill)] %>% summarise_all(~sum(is.na(.x))) %>% max() )/nrow(after_fill)*100 `%
+
+
+
+
+
+
+
+
+
+```{r drop_date, warning=FALSE}
+
+data_process_mean <- after_fill %>% 
                      group_by(PATIENT_ID) %>%
                      summarise(across(everything(), 
-                                      ~mean(.x, na.rm = TRUE), 
+                                      ~median(.x, na.rm = TRUE), 
                                       .names = "{.col}"))
 
 kable(summary(data_process_mean))
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r plot_many}
+n <- names(data_process_mean)
+nn <- abbreviate(n)
+buttons <- list()
+buttons_x <- list()
+id = 1
+
+for (name in n ){
+  ly <- list(method = "restyle", 
+            label = paste(nn[[name]], '(', id,  ') as y', sep=''),
+            args = list("y", list(data_process_mean[[name]])))
+  lx <- list(method = "restyle", 
+             label = paste(nn[[name]], '(', id,  ') as x', sep=''),
+             args = list("x", list(data_process_mean[[name]])))
+  
+  buttons <- c(buttons, list(ly))
+  buttons_x <- c(buttons_x, list(lx))
+  id <- id + 1
+}
+
+lx <- list(method = "restyle", 
+           label = "None",
+           args = list("x", seq(nrow(data_process_mean))))
+
+buttons_x <- c(list(lx), buttons_x)
+
+
+
+fig <- plot_ly(data_process_mean, 
+               x = ~seq(nrow(data_process_mean)), 
+               y = ~PATIENT_ID, alpha = 0.3)
+fig <- fig %>% add_markers(marker = list(line = list(color = "black", width = 0.5)))
+
+fig <- fig %>% layout(
+  title = "Drop down menus - Plot type",
+  xaxis = list(domain = c(0.1, 1)),
+  yaxis = list(title = "y"),
+  updatemenus = list(
+    list(y = 0.8,
+         label='y',
+         buttons = buttons
+         ),
+    list(y = 0.6,
+         label='x',
+         buttons = buttons_x
+         )
+    )
+  )
+
+fig
+```
+
+
+
+
+
+
+
+
+
+```{r fill_m1}
 
 data_replace_na <- data_process_mean
 data_replace_na[is.na(data_replace_na)] <- -1
-
-
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r fill_m1}
+
+data_replace_na <- data_process_mean
+data_replace_na[is.na(data_replace_na)] <- -1
+```
+
+
+
+
+
+
 
 
 ```{r clear_data, warning=FALSE}
@@ -79,7 +304,7 @@ data_clear$gender = as.factor(data_clear$gender)
 ```{r  feature_selection}
 control <- rfeControl(functions=rfFuncs, method="cv", number=10)
 
-results <- rfe(data_clear[, c(2, 3, c(5:78))], data_clear[[4]], sizes=c(1:76), rfeControl=control)
+results <- rfe(data_clear[, c(2, 3, c(5:78))], data_clear[[4]], sizes=c(1:50), rfeControl=control)
 
 print(results)
 
@@ -90,7 +315,7 @@ plot(results, type=c("g", "o"))
 
 ```{r select_features}
 
-data_clear_selected_features <- data_clear[, c(4)] %>% mutate(data_clear[predictors(results)])
+data_clear_selected_features <- data_clear[, c(4)] %>% mutate(data_clear[predictors(results)[1:5]])
 
 ```
 
@@ -99,7 +324,7 @@ data_clear_selected_features <- data_clear[, c(4)] %>% mutate(data_clear[predict
 ```{r create_datasets}
 data_to_fit <- data_clear_selected_features
 
-set.seed(1111)
+set.seed(5555)
 
 
 partition_set <- caret::createDataPartition(data_to_fit$outcome, p = .66, list = FALSE)
@@ -112,8 +337,8 @@ testing  <- data_to_fit[-partition_set,]
 ```{r create_ctrl}
 
 fitControl <- trainControl(method = "repeatedcv",
-                           number = 2,
-                           repeats = 5)
+                           number = 10,
+                           repeats = 3)
 ```
 
 
@@ -123,8 +348,7 @@ random_forest <- train(outcome ~ .,
                  data = training, 
                  method = "rf", 
                  trControl = fitControl,
-                 preProc = c("center", "scale"),
-                 mtree = 10)
+                 preProc = c("center", "scale"))
 random_forest
 ```
 

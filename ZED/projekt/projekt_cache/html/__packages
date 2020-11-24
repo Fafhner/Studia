@@ -3,3 +3,7 @@ dplyr
 knitr
 readxl
 DescTools
+tidyr
+lattice
+ggplot2
+caret
