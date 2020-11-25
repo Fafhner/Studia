@@ -20,7 +20,6 @@ library(DescTools)
 library(readxl)
 library(caret)
 library(plotly)
-library(htmlwidgets)
 ```
 
 ```{r Load_data_as_df}
@@ -144,7 +143,6 @@ print(paste("Number of 1 to all: ", v1*100/(v0+v1), '%'))
 
 
 
-
 ```{r summarise_fill_empty_values, warning=FALSE}
 
 before_fill <- new_data_df[, c(1, 8:ncol(new_data_df))]
@@ -199,7 +197,7 @@ kable(summary(data_process_mean))
 
 
 ```{r plot_many}
-n <- names(data_process_mean)
+n <- names(data_process_mean %>% select(!PATIENT_ID))
 nn <- abbreviate(n)
 buttons <- list()
 buttons_x <- list()
@@ -223,17 +221,18 @@ lx <- list(method = "restyle",
            args = list("x", seq(nrow(data_process_mean))))
 
 buttons_x <- c(list(lx), buttons_x)
+```
 
 
-
+```{r plot_many2}
 fig <- plot_ly(data_process_mean, 
                x = ~seq(nrow(data_process_mean)), 
-               y = ~PATIENT_ID, alpha = 0.3)
+               y = ~data_process_mean[[name[1]]], alpha = 0.3)
 fig <- fig %>% add_markers(marker = list(line = list(color = "black", width = 0.5)))
 
 fig <- fig %>% layout(
-  title = "Drop down menus - Plot type",
-  xaxis = list(domain = c(0.1, 1)),
+  title = "Plot of one of or the relationship between the columns.",
+  xaxis = list(domain = c(0.1, 1), title = 'x'),
   yaxis = list(title = "y"),
   updatemenus = list(
     list(y = 0.8,
@@ -251,17 +250,7 @@ fig
 ```
 
 
-
-
-
-
-
-
-
-```{r fill_m1}
-
-data_replace_na <- data_process_mean
-data_replace_na[is.na(data_replace_na)] <- -1
+```{r plot_many}
 ```
 
 
@@ -269,19 +258,75 @@ data_replace_na[is.na(data_replace_na)] <- -1
 
 
 
+```{r correlation}
+
+correl <- cor(data_process_mean[-1], use='complete.obs')
+corr_value <- 0.8
+
+correl_table <- as_tibble(x) %>% mutate(from=names(x))
+kable(correl_table)
+
+
+
+```
+
+```{r correlation2}
+correl_table_filtered <- correl_table %>% 
+                         pivot_longer(!from, names_to = "to", values_to = "count") %>% 
+                         filter(count >= corr_value, from != to)
+
+kable(correl_table_filtered)
+```
+
+
+```{r correlation3}
+correl_table_n_corr <- correl_table_filtered %>% 
+                       group_by(from) %>% 
+                       summarise(n=n()) 
+kable(correl_table_n_corr)
+```
 
 
 
 
+```{r correlation3}
+correl_table_n_corr_filtered <- correl_table_n_corr %>% filter(n >= 1)
+kable(correl_table_n_corr_filtered)
+```
 
+
+```{r columns_to_remove}
+correl_table_group_filter <- correl_table_filtered %>% 
+                             group_by(from) %>% 
+                             filter(from %in% correl_table_n_corr_filtered$from) %>%
+                             ungroup() %>%
+                             arrange(count) %>%
+                             distinct(count, .keep_all = T)
+                            
+
+cc <- correl_table_group_filter
+
+
+kable(cc)
+
+columns_to_remove <- unique(list(correl_table_group_filter$to)[[1]])
+
+kable(columns_to_remove)
+```
 
 
 
 
 
 ```{r fill_m1}
-
-data_replace_na <- data_process_mean
+join_data <- new_data_df[, c(1, 3, 4, 7)] %>% # select id, age, gender, outcome
+             group_by(PATIENT_ID) %>% 
+             unique() %>%
+             ungroup()
+data_replace_na <- data_process_mean %>% 
+                   select(-all_of(columns_to_remove)) %>%
+                   select(-"2019-nCoV nucleic acid detection") %>%
+                   left_join(y=join_data, by='PATIENT_ID')
 data_replace_na[is.na(data_replace_na)] <- -1
 ```
 
@@ -302,9 +347,9 @@ data_clear$gender = as.factor(data_clear$gender)
 
 
 ```{r  feature_selection}
-control <- rfeControl(functions=rfFuncs, method="cv", number=10)
+control <- rfeControl(functions=rfFuncs,  method="repeatedcv", number=5, repeats=3)
 
-results <- rfe(data_clear[, c(2, 3, c(5:78))], data_clear[[4]], sizes=c(1:50), rfeControl=control)
+results <- rfe(data_clear[, c(2:55)], data_clear$outcome, sizes=c(1:50), rfeControl=control)
 
 print(results)
 
@@ -315,7 +360,7 @@ plot(results, type=c("g", "o"))
 
 ```{r select_features}
 
-data_clear_selected_features <- data_clear[, c(4)] %>% mutate(data_clear[predictors(results)[1:5]])
+data_clear_selected_features <- data_clear %>% select(predictors(results)[1:10], outcome)
 
 ```
 
@@ -327,7 +372,7 @@ data_to_fit <- data_clear_selected_features
 set.seed(5555)
 
 
-partition_set <- caret::createDataPartition(data_to_fit$outcome, p = .66, list = FALSE)
+partition_set <- caret::createDataPartition(data_to_fit$outcome, p = .7, list = FALSE)
 training <- data_to_fit[ partition_set,]
 testing  <- data_to_fit[-partition_set,]
 ```
@@ -338,7 +383,7 @@ testing  <- data_to_fit[-partition_set,]
 
 fitControl <- trainControl(method = "repeatedcv",
                            number = 10,
-                           repeats = 3)
+                           repeats = 5)
 ```
 
 
@@ -347,8 +392,7 @@ set.seed(2323)
 random_forest <- train(outcome ~ .,
                  data = training, 
                  method = "rf", 
-                 trControl = fitControl,
-                 preProc = c("center", "scale"))
+                 trControl = fitControl)
 random_forest
 ```
 
@@ -357,5 +401,7 @@ random_forest
 rfClasses <- predict(random_forest, newdata = testing)
 confusionMatrix(data = rfClasses, testing$outcome)
 
+prob <- as_tibble(predict(random_forest, newdata = testing, type = "prob")) %>% mutate(outcome=testing$outcome) %>% rename(live="0", die="1")
+prob %>% arrange(live)
 ```
 
