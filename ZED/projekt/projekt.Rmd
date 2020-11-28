@@ -1,18 +1,23 @@
 ---
-title: "Projekt"
+title: "Projekt z Zaawansowanej Eksploracji Danych "
 author: "Rafał Morawski"
-date: "26 10 2020"
-output: html_document
+date: "28.11.2020"
+output:
+  html_document:
+    toc: true
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+knitr::opts_chunk$set(echo = TRUE, cache = F)
 ```
 
-## R Markdown
+# Wynik
 
 
-```{r Load_packages, warning=FALSE}
+# Rozwiazanie
+## Wykorzystane biblioteki
+```{r Load_packages, warning=FALSE, results="hide"}
 library(dplyr)
 library(tidyr)
 library(knitr)
@@ -20,19 +25,32 @@ library(DescTools)
 library(readxl)
 library(caret)
 library(plotly)
+library(kableExtra)
 ```
+
+## Wczytywanie dannych, zmianna nazw kolumn
+Z pakietu 'readxl' wykorzystano funkcję 'read_excel'. Jak się okazuje, wiersze dla kolumny 'PATIENT_ID' są złączone ze sobą w excelu, natomiast po wczytaniu tylko jeden wiersz dla danego id nie otrzymuje wartość NaN. 
 
 ```{r Load_data_as_df}
 
 orig_data_csv <- read_excel("wuhan_blood_sample_data_Jan_Feb_2020.xlsx")
 
-orig_data_df <- dplyr::as_tibble(orig_data_csv) %>% rename('Tumor necrosis factor-alpha'='Tumor necrosis factor\u03B1', 'Interleukin 1Beta'='Interleukin 1\u03B2',  'gamma-glutamyl transpeptidase'='\u03B3-glutamyl transpeptidase')
-
+kable(head(orig_data_csv, 5)) %>%
+  kable_styling(bootstrap_options = "basic",
+                full_width = F) %>%
+    scroll_box(width = "100%", height = "100%")
 
 ```
+Ponieważ mogą wystąpić pewne problemy z kodowaniem, wykorzystano funkcj 'make.names', aby zapewnić poprawne nazwy atrybutów
+```{r rename}
 
-Ponieważ czesc wierszy, przynależy do konkretnego pacjenta, ale nie posiadaja one id, nalezy te id dopisac:
+orig_data_df <- dplyr::as_tibble(orig_data_csv) %>% 
+                rename_with(~make.names(.x, unique = T), unique = TRUE)
 
+```
+\newpage
+## Uzupełnienie identyfikatora
+Ponieważ w poprzedniej podsekcji stwierdzono brakujące identyfikatory w wierszach przynależących do konkretnego pacjenta, uzupełniono je za pomocą funkcji 'fill' pakietu 'tidyr'.
 
 ```{r Restore_id}
 
@@ -41,8 +59,46 @@ group_by_id <- new_data_df %>% group_by(PATIENT_ID)
 
 ```
 
-%% Analiza danych
+```{r plot_time}
+arrange_by_date <- new_data_df %>% arrange(RE_DATE)
 
+
+fig_time <- plot_ly(arrange_by_date, 
+                    x=~arrange_by_date$RE_DATE, 
+                    y=~arrange_by_date$PATIENT_ID, 
+                    type = 'scatter',
+                    text = ~arrange_by_date %>% select(age, gender, outcome),
+                    hovertemplate = paste(
+                                    "Date: %{x}",
+                                    "Id: %{y}",
+                                    "Age: %{text.age}",
+                                    "Gender: %{text.gender}",
+                                    "Outcome: %{text.outcome}", sep='\n')
+                    ) %>% 
+            layout(
+              title = "Plot - timeseries RE_DATE",
+              xaxis = list(title='Time'),
+              yaxis = list(title = "Patient ID"))
+
+fig_time
+
+```
+
+\newpage
+## Analiza danych
+
+### Analiza wieku pacjentów
+
+```{r age_range, echo=F}
+
+age_min <- group_by_id$age %>% min()
+age_max <- group_by_id$age %>% max()
+mid_start <- 40
+old_start <- 65
+
+```
+
+Poniższy wykres przedstawia rozkład wieku pacjentów.
 
 ```{r analysis_age}
 
@@ -50,292 +106,458 @@ age_vector <- group_by_id %>% distinct(age) %>% ungroup()
 
 hist_age <- ggplot(data=age_vector, aes(x=age)) + 
             geom_histogram(binwidth=1, stat = 'bin', fill='steelblue', color='black') + 
-            labs(x='Age', y='Count', title='Histogram of age') + 
+            labs(x='Age', y='Count', title='Age histogram') + 
             scale_x_continuous(n.breaks = 20) +
             scale_y_continuous(n.breaks = 10) + 
             theme_classic()
       
-
 ggplotly(hist_age)
+
 ```
 
+Zakres wieku jest duży - od `r age_min` do `r age_max` lat. Dlatego można podzielić ten rozkład na 3 grupy - ludzi młodych(Young), w wieku średnim(Mid) oraz starych (Old).    
 
 
+```{r analysis_age_groups}
 
-
-```{r analysis_age2}
 hist_age_grouped <- ggplot(data=age_vector, aes(x=age)) + 
-            geom_histogram(breaks=c(min(age_vector$age), 40, 65, max(age_vector$age)), stat = 'bin', fill='steelblue', color='black') + 
-            labs(x='Age', y='Count', title='Histogram of age (grouped as Young, Middle Aged and Old)', position='dodge2') + 
+            geom_histogram(breaks=c(age_min, mid_start, old_start, age_max), stat = 'bin', fill='steelblue', color='black') + 
+            labs(x='Age', y='Count', title='Age histogram by groups.', position='dodge2') + 
             scale_y_continuous(n.breaks = 10) +
-            scale_x_continuous(breaks=c(min(age_vector$age), 40, 65, max(age_vector$age))) + 
+            scale_x_continuous(breaks=c(age_min, mid_start, old_start, age_max)) + 
             theme_classic() + 
-            annotate(geom='text', x=(40+min(age_vector$age))/2, y=10, label='Young') + 
-            annotate(geom='text', x=(65+40)/2, y=10, label='Mid') + 
-            annotate(geom='text', x=(max(age_vector$age)+65)/2, y=10, label='Old')
-      
+            annotate(geom='text', x=(mid_start+age_min)/2, y=10, label='Young') + 
+            annotate(geom='text', x=(old_start+mid_start)/2, y=10, label='Mid') + 
+            annotate(geom='text', x=(age_max+old_start)/2, y=10, label='Old')
 ggplotly(hist_age_grouped)
+
+```
+
+Zauważalne jest, że liczba osób młodych do reszty jest mała. Można przypuszczać, że osoby młode albo są bardziej odporne albo ich stan zdrowotny nie pogorszył się w takim stopniu, aby musieli zostać umieszczeni w szpitalu.  
+
+
+```{r age_data, echo=F}
 
 age_data <- ggplot_build(hist_age_grouped)$data
 young = age_data[[1]]$y[1]
 mid = age_data[[1]]$y[2]
 old = age_data[[1]]$y[3]
-print(paste("Number of Young to all: ", young*100/(young+mid+old), '%'))
-print(paste("Number of Mid to all: ", mid*100/(young+mid+old), '%'))
-print(paste("Number of Old to all: ", old*100/(young+mid+old), '%'))
+yound_per_all <- young*100/(young+mid+old)
+mid_per_all <- mid*100/(young+mid+old)
+old_per_all <- old*100/(young+mid+old)
+
 ```
 
+Stosunek liczby ludzi młodych do wszystkich pacjentów: `r round(yound_per_all, 2)`%   
+Stosunek liczby ludzi w średnim wieku do wszystkich pacjentów: `r round(mid_per_all, 2)`%  
+Stosunek liczby ludzi starych do wszystkich pacjentów: `r round(old_per_all, 2)`%  
+
+\newpage
+### Analiza płci pacjentów
 
 ```{r analysis_gender}
+
 gender_vector <- group_by_id %>% distinct(gender) %>% ungroup()
 
 hist_gender <- ggplot(data=gender_vector, aes(x=gender)) + 
             geom_histogram(binwidth=1, stat = 'bin', fill='steelblue', color='black') + 
-            labs(x='Outcome', y='Count', title='Histogram of outcome') + 
+            labs(x='Gender', y='Count', title='Gender histogram') + 
             scale_x_continuous(breaks = c(1, 2), label=c('Male', 'Female')) + 
             theme_classic()
       
 ggplotly(hist_gender)
 
+```
+
+
+```{r gender_data, echo=F}
 
 gender_data <- ggplot_build(hist_gender)$data
 males = gender_data[[1]]$y[1]
 females = gender_data[[1]]$y[2]
-print(paste("Number of males to all: ", males*100/(males+females), '%'))
-print(paste("Number of females to all: ", females*100/(males+females), '%'))
-
 
 ```
+Stosunek liczby mężczyzn do wszystkich pacjentów: `r round(males*100/(males+females), 2)`%   
+Stosunek liczby kobiet do wszystkich pacjentów: `r round(females*100/(males+females), 2)`%
 
-
-
+\newpage
+### Analiza stanu (outcome) pacjentów.
 ```{r analysis_count}
+
 outcome_vector <- group_by_id %>% distinct(outcome) %>% ungroup()
 
 hist_outcome <- ggplot(data=outcome_vector, aes(x=outcome)) + 
             geom_histogram(binwidth=1, stat = 'bin', fill='steelblue', color='black') + 
-            labs(x='Outcome', y='Count', title='Histogram of outcome') + 
-            scale_x_continuous(breaks = c(0, 1)) + 
+            labs(x='Outcome', y='Count', title='Outcome histogram') + 
+            scale_x_continuous(breaks = c(0, 1), label=c('Survived ', 'Died')) + 
             theme_classic()
 
 ggplotly(hist_outcome)
 
+```
+
+```{r count_data, echo=F}
 
 outcome_data <- ggplot_build(hist_outcome)$data
 v0 = outcome_data[[1]]$y[1]
 v1 = outcome_data[[1]]$y[2]
-print(paste("Number of 0 to all: ", v0*100/(v0+v1), '%'))
-print(paste("Number of 1 to all: ", v1*100/(v0+v1), '%'))
-
-
 
 ```
 
+Stosunek pacjentów, którzy przeżyli do wszystkich pacjentów: `r round(v0*100/(v0+v1), 2)`%   
+Stosunek pacjentów, którzy nie przeżyli do wszystkich pacjentów: `r round(v1*100/(v0+v1), 2)`%
 
+\newpage
+## Analiza próbek krwii
+### Wypełnienie wartości pustych
+#### Wartości przed wypełnieniem
 
+Z poniższej tabeli można zauważyć problem z dużą liczbą komórek o wartości NaN.
 
-
-
-
-
-
-
-
-
-
-```{r summarise_fill_empty_values, warning=FALSE}
+```{r before_fill}
 
 before_fill <- new_data_df[, c(1, 8:ncol(new_data_df))]
 
-after_fill  <- before_fill %>% group_by(PATIENT_ID) %>% fill(names(.), .direction = 'downup') %>% ungroup()
+kable(summary(before_fill[, 8:ncol(before_fill)])) %>%
+  kable_styling(bootstrap_options = "basic",
+                full_width = F) %>%
+    scroll_box(width = "100%", height = "100%")
 
-kable(summary(before_fill[, 8:ncol(before_fill)]))
-kable(summary(after_fill[, 2:ncol(after_fill)]))
+```
+
+```{r before_fill_data, echo=F}
+
+min_nan_before_fill <- before_fill[2:ncol(before_fill)] %>% summarise_all(~sum(is.na(.x))) %>% min() / nrow(before_fill)*100 
+
+max_nan_before_fill  <- before_fill[2:ncol(before_fill)] %>% summarise_all(~sum(is.na(.x))) %>% max()/nrow(before_fill)*100
+
+```
+
+Stosunek dla najmniejszej liczby wystąpień wartości NaN do całkowitej liczby wierszy przed wypełnieniem `r min_nan_before_fill`%  
+Stosunek dla największej liczby wystąpień wartości NaN do całkowitej liczby wierszy przed wypełnieniem `r max_nan_before_fill`%  
+
+#### Wartości po wypełnieniu
+Do wypełnienia danych z tych komórek wykorzystano funkcję 'fill', która najpierw wypełni komórki w dół, gdy napotka wartość inną niż NaN, a następnie wypełni w górę.
+
+```{r fill_empty_values, warning=FALSE}
+
+after_fill <- before_fill %>% 
+              group_by(PATIENT_ID) %>%
+              fill(names(.), .direction = 'downup') %>% 
+              ungroup()
+
+kable(summary(after_fill[, 2:ncol(after_fill)])) %>%
+  kable_styling(bootstrap_options = "basic", full_width = F) %>%
+  scroll_box(width = "100%", height = "100%")
 
 ```
 
 
+```{r after_fill_data, echo=F}
 
-Stosunek liczby wystapien zawierajcej min(NaN) do cakowitej liczby wierszy przed wypelnieniem `r ( before_fill[2:ncol(before_fill)] %>% summarise_all(~sum(is.na(.x))) %>% min() )/nrow(before_fill)*100 `%
+min_nan_after_fill <- after_fill[2:ncol(after_fill)] %>% summarise_all(~sum(is.na(.x))) %>% min()/nrow(after_fill)*100 
 
-Stosunek liczby wystapien zawierajcej max(NaN) do cakowitej liczby wierszy przed wypelnieniem `r ( before_fill[2:ncol(before_fill)] %>% summarise_all(~sum(is.na(.x))) %>% max() )/nrow(before_fill)*100 `%
+max_nan_after_fill <- after_fill[2:ncol(after_fill)] %>% summarise_all(~sum(is.na(.x))) %>% max() /nrow(after_fill)*100 
+```
+Stosunek dla najmniejszej liczby wystąpień wartości NaN do całkowitej liczby wierszy po wypełnieniu `r min_nan_after_fill`%  
+Stosunek dla największej liczby wystąpień wartości NaN do całkowitej liczby wierszy po wypełnieniu `r max_nan_after_fill`%  
 
-
-
-Stosunek liczby wystapien zawierajcej NaN do cakowitej liczby wierszy po wypelnieniu `r ( after_fill[2:ncol(after_fill)] %>% summarise_all(~sum(is.na(.x))) %>% min() )/nrow(after_fill)*100 `%
-
-
-Stosunek liczby wystapien zawierajcej NaN do cakowitej liczby wierszy po wypelnieniu `r ( after_fill[2:ncol(after_fill)] %>% summarise_all(~sum(is.na(.x))) %>% max() )/nrow(after_fill)*100 `%
-
-
-
-
-
-
-
-
+Dzięki temu zabiegowi uzyskano znaczny spadek liczby komórek zawierających NaN. 
+\newpage
+### Wybranie konkretnych próbek
+Ponieważ kilka wierszy przynależy do jednego pacjenta, to dka każdego pacjenta wybrano mediane wartości z każdej kolumny. Dzięki temu uzyska się po jednym wierszy na pacjenta.   
 
 ```{r drop_date, warning=FALSE}
 
-data_process_mean <- after_fill %>% 
+data_fill_summarise <- after_fill %>% 
                      group_by(PATIENT_ID) %>%
                      summarise(across(everything(), 
                                       ~median(.x, na.rm = TRUE), 
                                       .names = "{.col}"))
 
-kable(summary(data_process_mean))
+kable(summary(data_fill_summarise[,-1]))  %>%
+  kable_styling(bootstrap_options = "basic", full_width = F) %>%
+  scroll_box(width = "100%", height = "100%")
+```
+\newpage
+### Wariancja
+Ponieważ kolumna '	Hypersensitive.cardiac.troponinI' ma bardzo dużą wartość maksymalną, można sprawdzić wariancje każdej z kolumn.
+
+```{r data_median_var, warning=FALSE}
+
+data_process_var<- data_fill_summarise %>% 
+                    ungroup() %>%
+                    select(-PATIENT_ID) %>%
+                    summarise(across(everything(),  
+                                     l.fns= ~var(.x, na.rm = T), ~var(.x, na.rm = T)))
+                              
+data_process_median <- data_fill_summarise %>% 
+                    ungroup() %>%
+                    select(-PATIENT_ID) %>%
+                    summarise(across(everything(), .fns=~median(.x, na.rm = T)))
+                              
+
+data_processed_var_median <- bind_rows(col=names(data_process_median), 
+                                       variance=unlist(data_process_var[1, ], 
+                                                  use.names=FALSE), 
+                                       median=unlist(data_process_median[1, ],
+                                                     use.names=FALSE))
+
+
+kable(data_processed_var_median)  %>%
+  kable_styling(bootstrap_options = "basic", full_width = F) %>%
+  scroll_box(width = "100%", height = "500px")
+
 ```
 
-
-
-
-
-
-
-
-
-
+Można zauważyć, że kilka kolumn ma bardzo dużą wariancje w stosunku do mediany.
+W takim przypadku warto usunąć takie kolumn, jako, że mogą przeszkodzić w kolejnych analizach i w tworzeniu klasyfikatora. Zostanie to zrobione w sekcji poświęconej klasyfikatorowi, ponieważ warto najpierw najpierw pokazać je na wykresie.
+\newpage
+### Wykresy
+Za pomocą poniższego wykresu interaktywnego, można wybrać do pokazania przebieg wartości danej kolumny lub wybrać kolumny dla wartości y oraz x, aby zobaczyć zależności.
 
 ```{r plot_many}
-n <- names(data_process_mean %>% select(!PATIENT_ID))
+
+n <- names(data_fill_summarise %>% select(!PATIENT_ID))
 nn <- abbreviate(n)
 buttons <- list()
 buttons_x <- list()
 id = 1
 
 for (name in n ){
-  ly <- list(method = "restyle", 
+  ly <- list(method = "update", 
             label = paste(nn[[name]], '(', id,  ') as y', sep=''),
-            args = list("y", list(data_process_mean[[name]])))
-  lx <- list(method = "restyle", 
-             label = paste(nn[[name]], '(', id,  ') as x', sep=''),
-             args = list("x", list(data_process_mean[[name]])))
+            args = list(list(
+              y=list(data_fill_summarise[[name]])), 
+              list(yaxis = list(title = name))
+            ))
+  
+    lx <- list(method = "update", 
+            label = paste(nn[[name]], '(', id,  ') as x', sep=''),
+            args = list(list(
+              x=list(data_fill_summarise[[name]])), 
+              list(xaxis = list(title = name, domain = c(0.1, 1)))
+            ))
   
   buttons <- c(buttons, list(ly))
   buttons_x <- c(buttons_x, list(lx))
   id <- id + 1
 }
-
-lx <- list(method = "restyle", 
-           label = "None",
-           args = list("x", seq(nrow(data_process_mean))))
+lx <- list(method = "update", 
+            label = 'None',
+            args = list(list(
+              x=list(seq(nrow(data_fill_summarise)))), 
+              list(xaxis = list(title = 'row_id', domain = c(0.1, 1)))))
+              
 
 buttons_x <- c(list(lx), buttons_x)
+
 ```
 
 
-```{r plot_many2}
-fig <- plot_ly(data_process_mean, 
-               x = ~seq(nrow(data_process_mean)), 
-               y = ~data_process_mean[[name[1]]], alpha = 0.3)
-fig <- fig %>% add_markers(marker = list(line = list(color = "black", width = 0.5)))
+```{r plot_many2, warning=F}
 
-fig <- fig %>% layout(
-  title = "Plot of one of or the relationship between the columns.",
-  xaxis = list(domain = c(0.1, 1), title = 'x'),
-  yaxis = list(title = "y"),
+fig_many <- plot_ly(data_fill_summarise, 
+               x = ~seq(nrow(data_fill_summarise)), 
+               y = ~data_fill_summarise[[name[1]]], alpha = 0.3)
+fig_many <- fig_many %>% add_markers(marker = list(line = list(color = "black", width = 0.5)))
+
+fig_many <- fig_many %>% layout(
+  title = "Plot of one or the relationship between columns.",
+  xaxis = list(domain = c(0.1, 1), title = 'row_id'),
+  yaxis = list(title = name[1]),
   updatemenus = list(
     list(y = 0.8,
-         label='y',
          buttons = buttons
          ),
     list(y = 0.6,
-         label='x',
          buttons = buttons_x
          )
     )
   )
 
-fig
+fig_many
+
 ```
 
+\newpage
+### Korelacja
 
-```{r plot_many}
+Za pomocą korelacji można sprawdzić czy nie ma zależności pomiędzy kolumnami. Jeśli istnieją, to pewne kolumny będą zbędne i będzie można wyrzucić ze zbioru.  
+
+```{r corr_factor, echo=F}
+
+corr_value <- 0.8
+
 ```
-
-
-
-
-
+Uznano, że jeżeli współczynnik korelacji będzie większy bądź równy `r corr_value`, to oznacza, że kolumny są skorelowane.
 
 ```{r correlation}
 
-correl <- cor(data_process_mean[-1], use='complete.obs')
-corr_value <- 0.8
+correl <- cor(data_fill_summarise[-1], use='complete.obs')
 
-correl_table <- as_tibble(x) %>% mutate(from=names(x))
-kable(correl_table)
+correl_table <- as_tibble(correl) %>% mutate(from=names(correl))
 
-
+kable(correl_table)  %>%
+  kable_styling(bootstrap_options = "basic", full_width = F) %>%
+  scroll_box(width = "100%", height = "500px")
 
 ```
+
+Powyższa macierz pokazuje zależności pomiędzy konkretnymi kolumnami. Wygodniej jest jednak umieścić w dwóch kolumnach nazwy skorelowanych kolumn, a w trzeciej umieścić wartości współczynnika korelacji. Odfiltrowano również wartości mniejsze niż wskazaną wartość `r corr_value`.
 
 ```{r correlation2}
-correl_table_filtered <- correl_table %>% 
-                         pivot_longer(!from, names_to = "to", values_to = "count") %>% 
-                         filter(count >= corr_value, from != to)
 
-kable(correl_table_filtered)
+correl_table_filtered <- correl_table %>% mutate(from=names(correl_table)) %>%
+                         pivot_longer(!from, names_to = "to", values_to = "count") %>% 
+                         filter(count >= corr_value, from != to) %>%
+                         rename(corr=count)
+
+kable(correl_table_filtered)  %>%
+  kable_styling(bootstrap_options = "basic", full_width = F) %>%
+  scroll_box(width = "100%", height = "500px")
+
 ```
 
+Poniższa tabela wskaże, z iloma kolumnami dana kolumna jest skorelowana. 
 
-```{r correlation3}
+```{r correlation3, warning=F}
+
 correl_table_n_corr <- correl_table_filtered %>% 
                        group_by(from) %>% 
-                       summarise(n=n()) 
-kable(correl_table_n_corr)
+                       summarise(n=n()) %>% filter(n >= 1) 
+kable(correl_table_n_corr)  %>%
+  kable_styling(bootstrap_options = "basic", full_width = F) %>%
+  scroll_box(width = "100%", height = "500px")
+
 ```
 
 
-
-
-```{r correlation3}
-correl_table_n_corr_filtered <- correl_table_n_corr %>% filter(n >= 1)
-kable(correl_table_n_corr_filtered)
-```
-
+%
+%
+% Cols to remove
+% 
+Na podstawie ostatnich tabel, wybrano te kolumny które powinny zostać usunięte z tabeli, z powodu wysokiej korelacji.
 
 ```{r columns_to_remove}
+
 correl_table_group_filter <- correl_table_filtered %>% 
                              group_by(from) %>% 
-                             filter(from %in% correl_table_n_corr_filtered$from) %>%
+                             filter(from %in% correl_table_n_corr$from) %>%
                              ungroup() %>%
-                             arrange(count) %>%
-                             distinct(count, .keep_all = T)
+                             arrange(corr) %>%
+                             distinct(corr, .keep_all = T)
                             
-
-cc <- correl_table_group_filter
-
-
-kable(cc)
 
 columns_to_remove <- unique(list(correl_table_group_filter$to)[[1]])
 
-kable(columns_to_remove)
+kable(tibble(col_to_remove=columns_to_remove))  %>%
+  kable_styling(bootstrap_options = "basic", full_width = F) %>%
+  scroll_box(width = "100%", height = "500px")
+
+```
+
+
+Poniższy wykres interaktywny umożliwi pokazanie zależności pomiędzy skorelowanymi kolumnami.
+
+```{r correl_table_filtered}
+
+rows <- nrow(correl_table_group_filter)
+cor_buttons <- list()
+
+for (row in 1:rows){
+  xcol <- correl_table_filtered[row, ]$from
+  ycol <- correl_table_filtered[row, ]$to
+  
+  ly <- list(method = "update", 
+            label = paste(row),
+            args = list(list(
+              x=list(data_fill_summarise[[xcol]]),
+              y=list(data_fill_summarise[[ycol]])
+                            ), 
+              list(yaxis = list(title = ycol), xaxis = list(title = xcol, 
+                                                            domain = c(0.1, 1)))
+            )
+            )
+
+  cor_buttons <- c(cor_buttons, list(ly))
+}
+
+
+```
+
+
+```{r cor_plot,  warning=F}
+
+xcol1 <- correl_table_filtered[1, ]$from
+ycol1 <- correl_table_filtered[1, ]$to
+  
+fig_cor <- plot_ly(data_fill_summarise, 
+               x = ~data_fill_summarise[[xcol1]], 
+               y = ~data_fill_summarise[[ycol1]], alpha = 0.3)
+fig_cor <- fig_cor %>% add_markers(marker = list(line = list(color = "black", width = 0.5)))
+
+fig_cor <- fig_cor %>% layout(
+  title = "Correlation plot",
+  xaxis = list(domain = c(0.1, 1), title = xcol1),
+  yaxis = list(title = ycol1),
+  updatemenus = list(
+    list(y = 0.8,
+         buttons = cor_buttons
+         )
+    )
+  )
+
+fig_cor
+  
 ```
 
 
 
 
+\newpage
 
-```{r fill_m1}
+## Klasyfikator
+### Czyszczenie danych
+
+Do analizy zostaną włączone identyfikator pacjenta (tylko do określenia, który wiersz należy do jakiego pacjenta), wiek, płeć, stan pacjenta (outcome, jako klasa dla klasyfikatora). Dodatkowo z danych krwii, zostaną wszystkie oprócz uzyskane z analizy korelacji a także, tych których wariancja jest za duża.
+
+Dodanie kolumn i usunięcie kolumn o dużej korelacji.
+```{r join_m1}
+
 join_data <- new_data_df[, c(1, 3, 4, 7)] %>% # select id, age, gender, outcome
              group_by(PATIENT_ID) %>% 
              unique() %>%
              ungroup()
-data_replace_na <- data_process_mean %>% 
+
+data_join_filled <- data_fill_summarise %>% 
                    select(-all_of(columns_to_remove)) %>%
-                   select(-"2019-nCoV nucleic acid detection") %>%
                    left_join(y=join_data, by='PATIENT_ID')
-data_replace_na[is.na(data_replace_na)] <- -1
 ```
 
+Usunięcie kolumn o dużej wariancji:
+```{r join_m2}
+var_per_median <- 100
+var_too_big <- data_processed_var_median %>% 
+               filter(abs(variance) >= abs(var_per_median*median))
+    
+kable(var_too_big)  %>%
+  kable_styling(bootstrap_options = "basic", full_width = F) %>%
+  scroll_box(width = "100%", height = "50%")
 
+data_unselected_high_var <- data_join_filled %>% select(-any_of(var_too_big$col))
+```
 
+Pozostałe wartości puste zostaną wypełnione wartością '-1'.
 
+```{r }
+data_replace_na <-data_unselected_high_var
 
+data_replace_na[is.na(data_replace_na)] <- -1
 
+```
 
+Ustawienie kolumn 'outcome' oraz 'gender' jako typ kategoryczny 
 
 ```{r clear_data, warning=FALSE}
 
@@ -343,34 +565,52 @@ data_clear <- ungroup(data_replace_na)
 data_clear$outcome = as.factor(data_clear$outcome)
 data_clear$gender = as.factor(data_clear$gender)
 
+kable(head(data_clear)) %>%
+  kable_styling(bootstrap_options = "basic", full_width = F) %>%
+  scroll_box(width = "100%", height = "100%")
+
 ```
+### Utworzenie klasyfikatora
 
+Za pomocą 'rfe' można sprawdzić, które atrybuty mają największe znaczenie.
 
-```{r  feature_selection}
+```{r  feature_selection, cache=T}
 control <- rfeControl(functions=rfFuncs,  method="repeatedcv", number=5, repeats=3)
 
-results <- rfe(data_clear[, c(2:55)], data_clear$outcome, sizes=c(1:50), rfeControl=control)
+results <- rfe(data_clear[, 2:42], 
+               data_clear$outcome, 
+               sizes=c(1:40), 
+               rfeControl=control)
 
-print(results)
 
-predictors(results)
-
-plot(results, type=c("g", "o"))
 ```
 
+Wyniki selekcji atrybutów:
+```{r feature_selection_result}
+kable(tibble(optimal_variables=results$optVariables)) %>%
+  kable_styling(bootstrap_options = "basic", full_width = F) %>%
+  scroll_box(width = "100%", height = "400px")
+
+ggplotly(ggplot(results, type=c("o")))
+```
+
+
+
+
+Następnie można wybrać wszystkie optymalne atrybuty.
 ```{r select_features}
 
-data_clear_selected_features <- data_clear %>% select(predictors(results)[1:10], outcome)
+data_clear_selected_features <- data_clear %>% 
+                                select(outcome, results$optVariables)
 
 ```
 
 
-
-```{r create_datasets}
+W kolejnym etapie można podzielić dane na treningowe oraz testowe.
+```{r create_datasets, cache=T}
 data_to_fit <- data_clear_selected_features
 
 set.seed(5555)
-
 
 partition_set <- caret::createDataPartition(data_to_fit$outcome, p = .7, list = FALSE)
 training <- data_to_fit[ partition_set,]
@@ -380,28 +620,59 @@ testing  <- data_to_fit[-partition_set,]
 
 
 ```{r create_ctrl}
-
-fitControl <- trainControl(method = "repeatedcv",
-                           number = 10,
-                           repeats = 5)
+rfGrid <- expand.grid(mtry = 2:10)
+gridCtrl <- trainControl(method = "repeatedcv",
+                         number = 10,
+                         repeats = 5)
 ```
 
-
-```{r train}
-set.seed(2323)
+Do klasyfikacji, wykorzystano model 'random forest' z biblioteki `caret`:
+```{r train , cache=T}
+set.seed(232323)
 random_forest <- train(outcome ~ .,
-                 data = training, 
-                 method = "rf", 
-                 trControl = fitControl)
+                 data = training,
+                 method = "rf",
+                 trControl = gridCtrl,
+                 tuneGrid = rfGrid,)
 random_forest
 ```
+Za pomoc 'gridControl' dobrano optymalny parametr 'mtry'.
 
+```{r rf_plot}
+ggplotly(ggplot(random_forest) + theme_bw())
+```
+### Test klasyfikatora
+Następnie, można przetestować działanie tego modelu na danych testowych:
 
-```{r test}
+```{r test, cache=T}
 rfClasses <- predict(random_forest, newdata = testing)
-confusionMatrix(data = rfClasses, testing$outcome)
+cmatrix <- confusionMatrix(data = rfClasses, testing$outcome)
 
-prob <- as_tibble(predict(random_forest, newdata = testing, type = "prob")) %>% mutate(outcome=testing$outcome) %>% rename(live="0", die="1")
-prob %>% arrange(live)
+cmatrix
+
+prob <- as_tibble(predict(random_forest, newdata = testing, type = "prob")) %>% mutate(outcome=testing$outcome) %>% rename(Survived_probability="0", Died_probability="1")
+
+kable(prob %>% arrange(Survived_probability)) %>%
+  kable_styling(bootstrap_options = "basic", full_width = F) %>%
+  scroll_box(width = "100%", height = "400px")
+```
+Uzyskano trafność około 90%. Natomiast ważniejsze jest trafność czy pacjent przeżyje. 
+Większe skutki niesie ze soba model, który zakwalifikowałby pacjenta, który by umarł (z klasy 1), jako zdolnego do przeżycia (do klasy 0) niż model, który stwierdzi, że pacjent umrze, choć ma duże szanse na przeżycie. 
+W pierwszym przypadku może spowodować, że lekarz mógłby zaniedbać pacjenta, myśląc, że przeżyje.  
+W tym przypadku miara 'False positive rate' wynosi `r round(cmatrix$table[2,1]/(sum(cmatrix$table[2, ])),3)`, a 'Positive predictive value' wynosi `r round(cmatrix$table[1, 1]/sum(cmatrix$table[1, ]), 3)*100`%
+
+Ostatecznie, finalny model posiada `r random_forest$finalModel$ntree` drzew, a parametr mtry=`r random_forest$finalModel$mtry`:
+```{r final_model, cache=T}
+random_forest$finalModel
+
 ```
 
+Najważniejsze atrybuty:
+```{r final_model_attr}
+row_matrix_names <- rownames(random_forest$finalModel$importance)
+values <- random_forest$finalModel$importance
+kable(tibble(col=row_matrix_names, MeanDecreaseGini=values) %>% 
+      arrange(desc(MeanDecreaseGini))) %>%
+  kable_styling(bootstrap_options = "basic", full_width = F) %>%
+  scroll_box(width = "100%", height = "400px")
+```
