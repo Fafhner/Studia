@@ -1,9 +1,9 @@
 base
 dplyr
-knitr
-readxl
-DescTools
 tidyr
+knitr
+DescTools
+readxl
 lattice
 ggplot2
 caret

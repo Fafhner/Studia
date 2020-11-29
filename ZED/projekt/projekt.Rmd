@@ -1,7 +1,7 @@
 ---
 title: "Projekt z Zaawansowanej Eksploracji Danych "
 author: "Rafał Morawski"
-date: "28.11.2020"
+date: "26.10.2020"
 output:
   html_document:
     toc: true
@@ -12,12 +12,15 @@ output:
 knitr::opts_chunk$set(echo = TRUE, cache = F)
 ```
 
-# Wynik
-
+# Podsumowanie
+Do tego typu zbiorów danych powinno się analizować w obecności osób z ekspertyzą medyczną. Przykładowo dane o "Lactate dehydrogenase" zostały pominięte z powodu wysokiej wariancji, naotmiast w artykule [Tan et al](https://www.nature.com/articles/s42256-020-0180-7), był jednym z atrybutów, które decydowały o tym, czy pacjent przeżył.
+Jednocześnie liczba limfocytów i w artykule oraz w klasyfikatorze z tego raportu również decydowały w dużej mierze o przeżywalności. Dlatego można by uznać, że jest jendym z decydujących czynników.
+W ogólności, wynikiem tego raportu jest, że ilość liczby białych kriwnek i ich typu (limfocyty, monocyty, neutrofile) mają największy wpływ.
+Dodatkowo analiza wieku wykazała, że ludzie starsi mają mniejsze szanse na przeżycie.
 
 # Rozwiazanie
 ## Wykorzystane biblioteki
-```{r Load_packages, warning=FALSE, results="hide"}
+```{r Load_packages, warning=FALSE, echo = T, results = 'hide', message=FALSE}
 library(dplyr)
 library(tidyr)
 library(knitr)
@@ -133,7 +136,7 @@ ggplotly(hist_age_grouped)
 
 ```
 
-Zauważalne jest, że liczba osób młodych do reszty jest mała. Można przypuszczać, że osoby młode albo są bardziej odporne albo ich stan zdrowotny nie pogorszył się w takim stopniu, aby musieli zostać umieszczeni w szpitalu.  
+Zauważalne jest, że liczba osób młodych do reszty jest mała. Można przypuszczać, że osoby młode  są bardziej odporne albo ich stan zdrowotny nie pogorszył się w takim stopniu, aby musieli zostać umieszczeni w szpitalu.  
 
 
 ```{r age_data, echo=F}
@@ -151,6 +154,29 @@ old_per_all <- old*100/(young+mid+old)
 Stosunek liczby ludzi młodych do wszystkich pacjentów: `r round(yound_per_all, 2)`%   
 Stosunek liczby ludzi w średnim wieku do wszystkich pacjentów: `r round(mid_per_all, 2)`%  
 Stosunek liczby ludzi starych do wszystkich pacjentów: `r round(old_per_all, 2)`%  
+
+
+Zgodnie ze statystyką [wieku pacjentów w chinach](https://www.statista.com/statistics/1095024/china-age-distribution-of-wuhan-coronavirus-covid-19-patients/), 
+również wynika, że najbardziej narażeni są ludzie w wieku wyżej niż 30 lat.
+
+
+```{r age_deaths}
+
+age_outcome <- group_by_id %>% distinct(age, outcome) %>% group_by(age) %>% count(outcome)
+age_deaths <- age_outcome %>% filter(outcome == 1)
+age_survived <- age_outcome %>% filter(outcome == 0)
+
+
+plot_ly(type = 'bar', ) %>%
+        add_trace(data=age_deaths, x =~age, y = ~n, name='Died') %>%
+        add_trace(data=age_survived, x=~age, y = ~n, name='Survived') %>%
+        layout(yaxis = list(title = 'Count'), barmode = 'group')  %>% 
+  layout(title='Age histogram grouped by outcome')
+
+```
+
+Można zauważyć, że młodzi ludzie częściej przeżywali, a histogram dla ludzi zmarłych przypomina rozkład normalny, a średnia by wynosiła 68 lat.
+
 
 \newpage
 ### Analiza płci pacjentów
@@ -179,6 +205,25 @@ females = gender_data[[1]]$y[2]
 ```
 Stosunek liczby mężczyzn do wszystkich pacjentów: `r round(males*100/(males+females), 2)`%   
 Stosunek liczby kobiet do wszystkich pacjentów: `r round(females*100/(males+females), 2)`%
+
+Liczba mężczyzn jest większa niż liczba kobiet. Może mieć to związek, że w Wuhan jest znacznie więcej [mężczyzn niż kobiet.](https://www.statista.com/statistics/251129/population-in-china-by-gender/)
+
+```{r gender_deaths}
+
+gender_outcome <- group_by_id %>% distinct(gender, outcome) %>% group_by(gender) %>% 
+                  count(outcome)
+gender_deaths <- gender_outcome %>% filter(outcome == 1)
+gender_survived <- gender_outcome %>% filter(outcome == 0)
+
+
+plot_ly(type = 'bar') %>%
+        add_trace(data=gender_deaths, x =~gender, y = ~n, name='Died') %>%
+        add_trace(data=gender_survived, x=~gender, y = ~n, name='Survived') %>%
+        layout(yaxis = list(title = 'Count'), barmode = 'group')  %>% 
+  layout(title='Age histogram grouped by outcome')
+
+```
+Więcej mężczyzn zmarło niż przeżyło. Z kolei kobiety częściej przeżywały. To również może być wynikiem dysproporcji płci w Chinach.
 
 \newpage
 ### Analiza stanu (outcome) pacjentów.
@@ -316,7 +361,7 @@ W takim przypadku warto usunąć takie kolumn, jako, że mogą przeszkodzić w k
 ### Wykresy
 Za pomocą poniższego wykresu interaktywnego, można wybrać do pokazania przebieg wartości danej kolumny lub wybrać kolumny dla wartości y oraz x, aby zobaczyć zależności.
 
-```{r plot_many}
+```{r plot_many, warning=F}
 
 n <- names(data_fill_summarise %>% select(!PATIENT_ID))
 nn <- abbreviate(n)
@@ -392,7 +437,7 @@ corr_value <- 0.8
 ```
 Uznano, że jeżeli współczynnik korelacji będzie większy bądź równy `r corr_value`, to oznacza, że kolumny są skorelowane.
 
-```{r correlation}
+```{r correlation, warning=F}
 
 correl <- cor(data_fill_summarise[-1], use='complete.obs')
 
@@ -433,10 +478,6 @@ kable(correl_table_n_corr)  %>%
 ```
 
 
-%
-%
-% Cols to remove
-% 
 Na podstawie ostatnich tabel, wybrano te kolumny które powinny zostać usunięte z tabeli, z powodu wysokiej korelacji.
 
 ```{r columns_to_remove}
@@ -676,3 +717,7 @@ kable(tibble(col=row_matrix_names, MeanDecreaseGini=values) %>%
   kable_styling(bootstrap_options = "basic", full_width = F) %>%
   scroll_box(width = "100%", height = "400px")
 ```
+
+
+Ponieważ neutrophils, monocytes, lymphocyte to są białe krwinki, chronią one organizm przed wirusami i bakteriami. 
+Zmniejszona ich obecności może wpływać na odporność organizmu, a tym samym zwiększa ryzyko, że pacjent umrze. Prokalcytonina(procalcitonin) również ochrania organizm przed zakażeniami, a dodatkowo jest uznawany jako [marker biologicznym](https://diag.pl/pacjent/prokalcytonina-dziesiecioboista-wsrod-biomarkerow-stanow-zapalnych-i-zakazen/). Dlatego dla klasyfikatora mają one największe znaczenie. Wiek, a także poziomy cholesterolu i cukru mogą powodować dodatkowe problemy zdrowotne, dlatego również się tu znajdują.
