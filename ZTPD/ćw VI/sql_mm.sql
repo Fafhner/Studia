@@ -185,7 +185,7 @@ FROM
 Æwiczenie 5
 
 *************/
-;
+
 
 INSERT INTO user_sdo_geom_metadata
     SELECT
@@ -193,8 +193,8 @@ INSERT INTO user_sdo_geom_metadata
         'STGEOM',
         t.diminfo,
         t.srid
-    FROM
-        MYST_MAJOR_CITIES t;
+    from   user_sdo_geom_metadata T
+	where  T.table_name = 'MAJOR_CITIES';
 
 INSERT INTO user_sdo_geom_metadata
     SELECT
