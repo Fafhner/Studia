@@ -1,0 +1,141 @@
+//////////////////////////////////////////////
+1.
+
+/*
+"select irstream spolka as X, kursOtwarcia as Y " + " " +
+                        "from KursAkcji.win:length(3)" +
+                        "where spolka='Oracle'"
+*/
+
+ISTREAM : {X=Oracle, Y=12.25}
+RSTREAM : {X=Oracle, Y=12.25}
+ISTREAM : {X=Oracle, Y=11.82}
+RSTREAM : {X=Oracle, Y=11.82}
+ISTREAM : {X=Oracle, Y=10.86}
+RSTREAM : {X=Oracle, Y=10.86}
+ISTREAM : {X=Oracle, Y=10.89}
+RSTREAM : {X=Oracle, Y=10.89}
+ISTREAM : {X=Oracle, Y=10.29}
+RSTREAM : {X=Oracle, Y=10.29}
+ISTREAM : {X=Oracle, Y=10.95}
+RSTREAM : {X=Oracle, Y=10.95}
+ISTREAM : {X=Oracle, Y=11.23}
+RSTREAM : {X=Oracle, Y=11.23}
+ISTREAM : {X=Oracle, Y=10.79}
+
+//////////////////////////////////////////////
+2.
+/*
+"select irstream data, kursOtwarcia, spolka " + " " +
+                        "from KursAkcji.win:length(3)" +
+                        "where spolka='Oracle'"
+*/
+ISTREAM : {spolka=Oracle, data=Wed Sep 05 00:00:00 CEST 2001, kursOtwarcia=12.25}
+RSTREAM : {spolka=Oracle, data=Wed Sep 05 00:00:00 CEST 2001, kursOtwarcia=12.25}
+ISTREAM : {spolka=Oracle, data=Thu Sep 06 00:00:00 CEST 2001, kursOtwarcia=11.82}
+RSTREAM : {spolka=Oracle, data=Thu Sep 06 00:00:00 CEST 2001, kursOtwarcia=11.82}
+ISTREAM : {spolka=Oracle, data=Fri Sep 07 00:00:00 CEST 2001, kursOtwarcia=10.86}
+RSTREAM : {spolka=Oracle, data=Fri Sep 07 00:00:00 CEST 2001, kursOtwarcia=10.86}
+ISTREAM : {spolka=Oracle, data=Mon Sep 10 00:00:00 CEST 2001, kursOtwarcia=10.89}
+RSTREAM : {spolka=Oracle, data=Mon Sep 10 00:00:00 CEST 2001, kursOtwarcia=10.89}
+ISTREAM : {spolka=Oracle, data=Mon Sep 17 00:00:00 CEST 2001, kursOtwarcia=10.29}
+RSTREAM : {spolka=Oracle, data=Mon Sep 17 00:00:00 CEST 2001, kursOtwarcia=10.29}
+ISTREAM : {spolka=Oracle, data=Tue Sep 18 00:00:00 CEST 2001, kursOtwarcia=10.95}
+RSTREAM : {spolka=Oracle, data=Tue Sep 18 00:00:00 CEST 2001, kursOtwarcia=10.95}
+ISTREAM : {spolka=Oracle, data=Wed Sep 19 00:00:00 CEST 2001, kursOtwarcia=11.23}
+RSTREAM : {spolka=Oracle, data=Wed Sep 19 00:00:00 CEST 2001, kursOtwarcia=11.23}
+ISTREAM : {spolka=Oracle, data=Thu Sep 20 00:00:00 CEST 2001, kursOtwarcia=10.79}
+
+Process finished with exit code 0
+
+/////////////////////////////////////////////
+3.
+
+/* 
+"select irstream data, kursOtwarcia, spolka " + " " +
+                        "from KursAkcji(spolka='Oracle').win:length(3)"
+*/
+
+ISTREAM : {spolka=Oracle, data=Wed Sep 05 00:00:00 CEST 2001, kursOtwarcia=12.25}
+ISTREAM : {spolka=Oracle, data=Thu Sep 06 00:00:00 CEST 2001, kursOtwarcia=11.82}
+ISTREAM : {spolka=Oracle, data=Fri Sep 07 00:00:00 CEST 2001, kursOtwarcia=10.86}
+ISTREAM : {spolka=Oracle, data=Mon Sep 10 00:00:00 CEST 2001, kursOtwarcia=10.89}
+RSTREAM : {spolka=Oracle, data=Wed Sep 05 00:00:00 CEST 2001, kursOtwarcia=12.25}
+ISTREAM : {spolka=Oracle, data=Mon Sep 17 00:00:00 CEST 2001, kursOtwarcia=10.29}
+RSTREAM : {spolka=Oracle, data=Thu Sep 06 00:00:00 CEST 2001, kursOtwarcia=11.82}
+ISTREAM : {spolka=Oracle, data=Tue Sep 18 00:00:00 CEST 2001, kursOtwarcia=10.95}
+RSTREAM : {spolka=Oracle, data=Fri Sep 07 00:00:00 CEST 2001, kursOtwarcia=10.86}
+ISTREAM : {spolka=Oracle, data=Wed Sep 19 00:00:00 CEST 2001, kursOtwarcia=11.23}
+RSTREAM : {spolka=Oracle, data=Mon Sep 10 00:00:00 CEST 2001, kursOtwarcia=10.89}
+ISTREAM : {spolka=Oracle, data=Thu Sep 20 00:00:00 CEST 2001, kursOtwarcia=10.79}
+RSTREAM : {spolka=Oracle, data=Mon Sep 17 00:00:00 CEST 2001, kursOtwarcia=10.29}
+
+///////////////////////////////////////////////
+4.
+
+/*
+"select istream data, kursOtwarcia, spolka " + " " +
+                        "from KursAkcji(spolka='Oracle').win:length(3)"
+ */
+ 
+ISTREAM : {spolka=Oracle, data=Wed Sep 05 00:00:00 CEST 2001, kursOtwarcia=12.25}
+ISTREAM : {spolka=Oracle, data=Thu Sep 06 00:00:00 CEST 2001, kursOtwarcia=11.82}
+ISTREAM : {spolka=Oracle, data=Fri Sep 07 00:00:00 CEST 2001, kursOtwarcia=10.86}
+ISTREAM : {spolka=Oracle, data=Mon Sep 10 00:00:00 CEST 2001, kursOtwarcia=10.89}
+ISTREAM : {spolka=Oracle, data=Mon Sep 17 00:00:00 CEST 2001, kursOtwarcia=10.29}
+ISTREAM : {spolka=Oracle, data=Tue Sep 18 00:00:00 CEST 2001, kursOtwarcia=10.95}
+ISTREAM : {spolka=Oracle, data=Wed Sep 19 00:00:00 CEST 2001, kursOtwarcia=11.23}
+ISTREAM : {spolka=Oracle, data=Thu Sep 20 00:00:00 CEST 2001, kursOtwarcia=10.79}
+
+///////////////////////////////////////////////////
+5. 
+
+/* 
+"select istream data, max(kursOtwarcia), spolka " + " " +
+                        "from KursAkcji(spolka='Oracle').win:length(5)"
+*/
+
+ISTREAM : {max(kursOtwarcia)=12.25, spolka=Oracle, data=Wed Sep 05 00:00:00 CEST 2001}
+ISTREAM : {max(kursOtwarcia)=12.25, spolka=Oracle, data=Thu Sep 06 00:00:00 CEST 2001}
+ISTREAM : {max(kursOtwarcia)=12.25, spolka=Oracle, data=Fri Sep 07 00:00:00 CEST 2001}
+ISTREAM : {max(kursOtwarcia)=12.25, spolka=Oracle, data=Mon Sep 10 00:00:00 CEST 2001}
+ISTREAM : {max(kursOtwarcia)=12.25, spolka=Oracle, data=Mon Sep 17 00:00:00 CEST 2001}
+ISTREAM : {max(kursOtwarcia)=11.82, spolka=Oracle, data=Tue Sep 18 00:00:00 CEST 2001}
+ISTREAM : {max(kursOtwarcia)=11.23, spolka=Oracle, data=Wed Sep 19 00:00:00 CEST 2001}
+ISTREAM : {max(kursOtwarcia)=11.23, spolka=Oracle, data=Thu Sep 20 00:00:00 CEST 2001}
+
+///////////////////////////////////////////////////
+6.
+
+/*
+"select istream akcja.data as data, " +
+                        "akcja.kursOtwarcia - max(akcja.kursOtwarcia) as roznica, " +
+                        "akcja.spolka as spolka" + " " +
+                        "from KursAkcji(spolka='Oracle').win:length(5) as akcja"
+*/
+
+
+ISTREAM : {spolka=Oracle, data=Wed Sep 05 00:00:00 CEST 2001, roznica=0.0}
+ISTREAM : {spolka=Oracle, data=Thu Sep 06 00:00:00 CEST 2001, roznica=-0.4300003}
+ISTREAM : {spolka=Oracle, data=Fri Sep 07 00:00:00 CEST 2001, roznica=-1.3900003}
+ISTREAM : {spolka=Oracle, data=Mon Sep 10 00:00:00 CEST 2001, roznica=-1.3599997}
+ISTREAM : {spolka=Oracle, data=Mon Sep 17 00:00:00 CEST 2001, roznica=-1.96}
+ISTREAM : {spolka=Oracle, data=Tue Sep 18 00:00:00 CEST 2001, roznica=-0.8699999}
+ISTREAM : {spolka=Oracle, data=Wed Sep 19 00:00:00 CEST 2001, roznica=0.0}
+ISTREAM : {spolka=Oracle, data=Thu Sep 20 00:00:00 CEST 2001, roznica=-0.43999958}
+
+///////////////////////////////////////////////////
+7.
+
+/*
+"select istream data, " +
+                        "kursOtwarcia - prev(1, kursOtwarcia) as roznica, " +
+                        "spolka as spolka" + " " +
+                        "from KursAkcji(spolka='Oracle').win:length(2)" +
+                        "group by data having kursOtwarcia - prev(1, kursOtwarcia) > 0"
+*/
+
+
+ISTREAM : {spolka=Oracle, data=Mon Sep 10 00:00:00 CEST 2001, roznica=0.030000687}
+ISTREAM : {spolka=Oracle, data=Tue Sep 18 00:00:00 CEST 2001, roznica=0.65999985}
+ISTREAM : {spolka=Oracle, data=Wed Sep 19 00:00:00 CEST 2001, roznica=0.27999973}
