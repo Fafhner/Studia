@@ -1,0 +1,420 @@
+///////////////////////////////////////////////////
+
+
+1.
+
+/*
+
+"select istream data, kursZamkniecia, spolka, max(kursZamkniecia) - kursZamkniecia as roznica" +
+" from KursAkcji.win:ext_timed_batch(data.getTime(), 1 days) order by data"
+
+
+
+*/
+
+1707: ISTREAM : {spolka=Apple, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=18.55, roznica=81.8}
+1707: ISTREAM : {spolka=CocaCola, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=50.45, roznica=49.899998}
+1707: ISTREAM : {spolka=Disney, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=25.36, roznica=74.99}
+1707: ISTREAM : {spolka=Ford, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=19.97, roznica=80.38}
+1707: ISTREAM : {spolka=Honda, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=73.37, roznica=26.979996}
+1707: ISTREAM : {spolka=IBM, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=100.35, roznica=0.0}
+1707: ISTREAM : {spolka=Intel, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=27.47, roznica=72.88}
+1707: ISTREAM : {spolka=Microsoft, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=57.74, roznica=42.609997}
+1707: ISTREAM : {spolka=Oracle, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=12.07, roznica=88.28}
+1707: ISTREAM : {spolka=PepsiCo, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=47.8, roznica=52.55}
+1707: ISTREAM : {spolka=Yahoo, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=10.64, roznica=89.71}
+1713: ISTREAM : {spolka=Apple, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=17.72, roznica=80.28}
+1713: ISTREAM : {spolka=CocaCola, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=49.51, roznica=48.49}
+1713: ISTREAM : {spolka=Disney, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=24.49, roznica=73.51}
+1713: ISTREAM : {spolka=Ford, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=19.4, roznica=78.6}
+1713: ISTREAM : {spolka=Honda, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=77.35, roznica=20.650002}
+1713: ISTREAM : {spolka=IBM, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=98.0, roznica=0.0}
+1713: ISTREAM : {spolka=Intel, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=26.1, roznica=71.9}
+1713: ISTREAM : {spolka=Microsoft, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=56.02, roznica=41.98}
+1713: ISTREAM : {spolka=Oracle, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=10.92, roznica=87.08}
+1713: ISTREAM : {spolka=PepsiCo, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=47.1, roznica=50.9}
+1713: ISTREAM : {spolka=Yahoo, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=11.1, roznica=86.9}
+1716: ISTREAM : {spolka=Apple, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=17.28, roznica=79.31}
+1716: ISTREAM : {spolka=CocaCola, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=49.73, roznica=46.859997}
+1716: ISTREAM : {spolka=Disney, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=24.11, roznica=72.479996}
+1716: ISTREAM : {spolka=Ford, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=18.76, roznica=77.829994}
+1716: ISTREAM : {spolka=Honda, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=78.4, roznica=18.189995}
+1716: ISTREAM : {spolka=IBM, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=96.59, roznica=0.0}
+1716: ISTREAM : {spolka=Intel, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=25.89, roznica=70.7}
+1716: ISTREAM : {spolka=Microsoft, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=55.4, roznica=41.189995}
+1716: ISTREAM : {spolka=Oracle, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=11.07, roznica=85.52}
+1716: ISTREAM : {spolka=PepsiCo, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=47.4, roznica=49.189995}
+1716: ISTREAM : {spolka=Yahoo, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=10.75, roznica=85.84}
+1719: ISTREAM : {spolka=Apple, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=17.37, roznica=79.1}
+1719: ISTREAM : {spolka=CocaCola, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=49.95, roznica=46.52}
+1719: ISTREAM : {spolka=Disney, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=23.58, roznica=72.89}
+1719: ISTREAM : {spolka=Ford, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=19.4, roznica=77.07}
+1719: ISTREAM : {spolka=Honda, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=80.12, roznica=16.349998}
+1719: ISTREAM : {spolka=IBM, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=96.47, roznica=0.0}
+1719: ISTREAM : {spolka=Intel, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=26.07, roznica=70.4}
+1719: ISTREAM : {spolka=Microsoft, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=57.58, roznica=38.89}
+1719: ISTREAM : {spolka=Oracle, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=11.46, roznica=85.01}
+1719: ISTREAM : {spolka=PepsiCo, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=46.9, roznica=49.57}
+1719: ISTREAM : {spolka=Yahoo, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=11.74, roznica=84.73}
+1721: ISTREAM : {spolka=Apple, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=16.99, roznica=76.35}
+1721: ISTREAM : {spolka=CocaCola, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=50.2, roznica=43.139996}
+1721: ISTREAM : {spolka=Disney, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=19.25, roznica=74.09}
+1721: ISTREAM : {spolka=Ford, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=16.55, roznica=76.78999}
+1721: ISTREAM : {spolka=Honda, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=69.75, roznica=23.589996}
+1721: ISTREAM : {spolka=IBM, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=93.34, roznica=0.0}
+1721: ISTREAM : {spolka=Intel, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=23.59, roznica=69.75}
+1721: ISTREAM : {spolka=Microsoft, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=52.91, roznica=40.429996}
+1721: ISTREAM : {spolka=Oracle, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=11.01, roznica=82.329994}
+1721: ISTREAM : {spolka=PepsiCo, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=47.9, roznica=45.439995}
+1721: ISTREAM : {spolka=Yahoo, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=10.88, roznica=82.46}
+1727: ISTREAM : {spolka=Apple, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=16.28, roznica=80.12}
+1727: ISTREAM : {spolka=CocaCola, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=49.47, roznica=46.93}
+1727: ISTREAM : {spolka=Disney, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=18.4, roznica=78.0}
+1727: ISTREAM : {spolka=Ford, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=16.93, roznica=79.47}
+1727: ISTREAM : {spolka=Honda, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=65.5, roznica=30.900002}
+1727: ISTREAM : {spolka=IBM, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=96.4, roznica=0.0}
+1727: ISTREAM : {spolka=Intel, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=23.47, roznica=72.93}
+1727: ISTREAM : {spolka=Microsoft, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=54.32, roznica=42.08}
+1727: ISTREAM : {spolka=Oracle, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=11.38, roznica=85.020004}
+1727: ISTREAM : {spolka=PepsiCo, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=49.5, roznica=46.9}
+1727: ISTREAM : {spolka=Yahoo, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=10.1, roznica=86.3}
+1730: ISTREAM : {spolka=Apple, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=17.02, roznica=78.979996}
+1730: ISTREAM : {spolka=CocaCola, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=49.5, roznica=46.5}
+1730: ISTREAM : {spolka=Disney, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=18.5, roznica=77.5}
+1730: ISTREAM : {spolka=Ford, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=16.43, roznica=79.57}
+1730: ISTREAM : {spolka=Honda, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=64.25, roznica=31.75}
+1730: ISTREAM : {spolka=IBM, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=96.0, roznica=0.0}
+1730: ISTREAM : {spolka=Intel, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=22.28, roznica=73.72}
+1730: ISTREAM : {spolka=Microsoft, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=53.87, roznica=42.13}
+1730: ISTREAM : {spolka=Oracle, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=11.2, roznica=84.8}
+1730: ISTREAM : {spolka=PepsiCo, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=49.59, roznica=46.41}
+1730: ISTREAM : {spolka=Yahoo, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=10.07, roznica=85.93}
+
+Process finished with exit code 0
+
+
+
+///////////////////////////////////////////////////
+
+2.
+
+/* 
+
+"select istream data, kursZamkniecia, spolka, max(kursZamkniecia) - kursZamkniecia as roznica" +
+" from KursAkcji(spolka='IBM' or spolka='Honda' or spolka='Microsoft').win:ext_timed_batch(data.getTime(), 1 days) order by data"
+
+
+*/
+
+
+8116: ISTREAM : {spolka=Honda, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=73.37, roznica=26.979996}
+8116: ISTREAM : {spolka=IBM, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=100.35, roznica=0.0}
+8116: ISTREAM : {spolka=Microsoft, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=57.74, roznica=42.609997}
+8120: ISTREAM : {spolka=Honda, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=77.35, roznica=20.650002}
+8120: ISTREAM : {spolka=IBM, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=98.0, roznica=0.0}
+8120: ISTREAM : {spolka=Microsoft, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=56.02, roznica=41.98}
+8122: ISTREAM : {spolka=Honda, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=78.4, roznica=18.189995}
+8122: ISTREAM : {spolka=IBM, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=96.59, roznica=0.0}
+8122: ISTREAM : {spolka=Microsoft, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=55.4, roznica=41.189995}
+8124: ISTREAM : {spolka=Honda, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=80.12, roznica=16.349998}
+8124: ISTREAM : {spolka=IBM, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=96.47, roznica=0.0}
+8124: ISTREAM : {spolka=Microsoft, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=57.58, roznica=38.89}
+8126: ISTREAM : {spolka=Honda, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=69.75, roznica=23.589996}
+8126: ISTREAM : {spolka=IBM, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=93.34, roznica=0.0}
+8126: ISTREAM : {spolka=Microsoft, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=52.91, roznica=40.429996}
+8127: ISTREAM : {spolka=Honda, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=65.5, roznica=30.900002}
+8127: ISTREAM : {spolka=IBM, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=96.4, roznica=0.0}
+8127: ISTREAM : {spolka=Microsoft, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=54.32, roznica=42.08}
+8128: ISTREAM : {spolka=Honda, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=64.25, roznica=31.75}
+8128: ISTREAM : {spolka=IBM, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=96.0, roznica=0.0}
+8128: ISTREAM : {spolka=Microsoft, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=53.87, roznica=42.13}
+
+
+
+
+///////////////////////////////////////////////////
+3.
+
+/*
+
+a)
+
+	"select istream data, spolka, kursOtwarcia, kursZamkniecia" +
+	" from KursAkcji(kursZamkniecia > kursOtwarcia).win:ext_timed(data.getTime(), 1 days) order by data"
+
+b)
+
+	public static boolean isGreaterKursZamkniecia(Float kursZamkniecia, Float kursOtwarcia) {
+		return kursZamkniecia > kursOtwarcia;
+	}
+
+
+	"select istream data, spolka, kursOtwarcia, kursZamkniecia" +
+	" from KursAkcji(KursAkcji.isGreaterKursZamkniecia(kursZamkniecia, kursOtwarcia)).win:ext_timed(data.getTime(), 1 days) order by data"
+       
+    
+*/
+
+
+4365: ISTREAM : {spolka=Apple, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=18.55, kursOtwarcia=18.24}
+4369: ISTREAM : {spolka=CocaCola, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=50.45, kursOtwarcia=48.8}
+4370: ISTREAM : {spolka=Intel, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=27.47, kursOtwarcia=26.94}
+4371: ISTREAM : {spolka=Microsoft, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=57.74, kursOtwarcia=56.18}
+4371: ISTREAM : {spolka=PepsiCo, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=47.8, kursOtwarcia=47.46}
+4372: ISTREAM : {spolka=Honda, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=77.35, kursOtwarcia=76.48}
+4373: ISTREAM : {spolka=Yahoo, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=11.1, kursOtwarcia=11.03}
+4374: ISTREAM : {spolka=CocaCola, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=49.73, kursOtwarcia=49.26}
+4374: ISTREAM : {spolka=Disney, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=24.11, kursOtwarcia=24.1}
+4375: ISTREAM : {spolka=Oracle, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=11.07, kursOtwarcia=10.86}
+4376: ISTREAM : {spolka=PepsiCo, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=47.4, kursOtwarcia=46.9}
+4376: ISTREAM : {spolka=Yahoo, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=10.75, kursOtwarcia=10.74}
+4376: ISTREAM : {spolka=Apple, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=17.37, kursOtwarcia=17.0}
+4377: ISTREAM : {spolka=CocaCola, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=49.95, kursOtwarcia=49.74}
+4377: ISTREAM : {spolka=Disney, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=23.58, kursOtwarcia=23.5}
+4377: ISTREAM : {spolka=Ford, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=19.4, kursOtwarcia=18.7}
+4378: ISTREAM : {spolka=Honda, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=80.12, kursOtwarcia=78.57}
+4378: ISTREAM : {spolka=IBM, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=96.47, kursOtwarcia=96.0}
+4378: ISTREAM : {spolka=Intel, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=26.07, kursOtwarcia=25.53}
+4378: ISTREAM : {spolka=Microsoft, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=57.58, kursOtwarcia=54.92}
+4379: ISTREAM : {spolka=Oracle, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=11.46, kursOtwarcia=10.89}
+4379: ISTREAM : {spolka=Yahoo, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=11.74, kursOtwarcia=10.73}
+4380: ISTREAM : {spolka=Apple, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=16.99, kursOtwarcia=16.0}
+4380: ISTREAM : {spolka=CocaCola, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=50.2, kursOtwarcia=49.5}
+4380: ISTREAM : {spolka=Disney, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=19.25, kursOtwarcia=19.0}
+4381: ISTREAM : {spolka=Honda, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=69.75, kursOtwarcia=66.25}
+4383: ISTREAM : {spolka=Oracle, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=11.01, kursOtwarcia=10.29}
+4384: ISTREAM : {spolka=PepsiCo, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=47.9, kursOtwarcia=47.15}
+4384: ISTREAM : {spolka=Yahoo, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=10.88, kursOtwarcia=10.55}
+4385: ISTREAM : {spolka=Ford, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=16.93, kursOtwarcia=16.31}
+4386: ISTREAM : {spolka=IBM, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=96.4, kursOtwarcia=94.0}
+4386: ISTREAM : {spolka=Microsoft, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=54.32, kursOtwarcia=53.41}
+4387: ISTREAM : {spolka=Oracle, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=11.38, kursOtwarcia=10.95}
+4387: ISTREAM : {spolka=PepsiCo, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=49.5, kursOtwarcia=48.0}
+4388: ISTREAM : {spolka=Apple, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=17.02, kursOtwarcia=16.5}
+4388: ISTREAM : {spolka=Disney, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=18.5, kursOtwarcia=18.25}
+4389: ISTREAM : {spolka=Honda, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=64.25, kursOtwarcia=64.2}
+4389: ISTREAM : {spolka=PepsiCo, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=49.59, kursOtwarcia=49.49}
+4390: ISTREAM : {spolka=Oracle, data=Thu Sep 20 00:00:00 CEST 2001, kursZamkniecia=11.31, kursOtwarcia=10.79}
+4390: ISTREAM : {spolka=Yahoo, data=Thu Sep 20 00:00:00 CEST 2001, kursZamkniecia=9.97, kursOtwarcia=9.95}
+
+
+
+
+///////////////////////////////////////////////////
+
+4.
+
+/*
+
+"select istream data, spolka, kursZamkniecia, max(kursZamkniecia)-kursZamkniecia as roznica" +
+" from KursAkcji(spolka='PepsiCo' or spolka='CocaCola').win:ext_timed(data.getTime(), 7 days) order by data"
+
+
+*/
+
+
+
+6215: ISTREAM : {spolka=CocaCola, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=50.45, roznica=0.0}
+6220: ISTREAM : {spolka=PepsiCo, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=47.8, roznica=2.6500015}
+6220: ISTREAM : {spolka=CocaCola, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=49.51, roznica=0.94000244}
+6220: ISTREAM : {spolka=PepsiCo, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=47.1, roznica=3.3500023}
+6220: ISTREAM : {spolka=CocaCola, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=49.73, roznica=0.7200012}
+6225: ISTREAM : {spolka=PepsiCo, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=47.4, roznica=3.0499992}
+6225: ISTREAM : {spolka=CocaCola, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=49.95, roznica=0.5}
+6225: ISTREAM : {spolka=PepsiCo, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=46.9, roznica=3.5499992}
+6225: ISTREAM : {spolka=CocaCola, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=50.2, roznica=0.0}
+6225: ISTREAM : {spolka=PepsiCo, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=47.9, roznica=2.2999992}
+6230: ISTREAM : {spolka=CocaCola, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=49.47, roznica=0.72999954}
+6230: ISTREAM : {spolka=PepsiCo, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=49.5, roznica=0.70000076}
+6235: ISTREAM : {spolka=CocaCola, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=49.5, roznica=0.70000076}
+6235: ISTREAM : {spolka=PepsiCo, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=49.59, roznica=0.6100006}
+6240: ISTREAM : {spolka=CocaCola, data=Thu Sep 20 00:00:00 CEST 2001, kursZamkniecia=48.35, roznica=1.8500023}
+6240: ISTREAM : {spolka=PepsiCo, data=Thu Sep 20 00:00:00 CEST 2001, kursZamkniecia=48.76, roznica=1.4400024}
+
+
+
+///////////////////////////////////////////////////
+
+5.
+
+
+/*
+
+"select istream data, spolka, kursZamkniecia " +
+" from KursAkcji(spolka='PepsiCo' or spolka='CocaCola').win:ext_timed(data.getTime(), 1 days) " +
+" having max(kursZamkniecia) = kursZamkniecia"
+
+
+*/
+
+
+3823: ISTREAM : {spolka=CocaCola, data=Wed Sep 05 00:00:00 CEST 2001, kursZamkniecia=50.45}
+3827: ISTREAM : {spolka=CocaCola, data=Thu Sep 06 00:00:00 CEST 2001, kursZamkniecia=49.51}
+3830: ISTREAM : {spolka=CocaCola, data=Fri Sep 07 00:00:00 CEST 2001, kursZamkniecia=49.73}
+3830: ISTREAM : {spolka=CocaCola, data=Mon Sep 10 00:00:00 CEST 2001, kursZamkniecia=49.95}
+3833: ISTREAM : {spolka=CocaCola, data=Mon Sep 17 00:00:00 CEST 2001, kursZamkniecia=50.2}
+3833: ISTREAM : {spolka=CocaCola, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=49.47}
+3833: ISTREAM : {spolka=PepsiCo, data=Tue Sep 18 00:00:00 CEST 2001, kursZamkniecia=49.5}
+3833: ISTREAM : {spolka=CocaCola, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=49.5}
+3833: ISTREAM : {spolka=PepsiCo, data=Wed Sep 19 00:00:00 CEST 2001, kursZamkniecia=49.59}
+3838: ISTREAM : {spolka=CocaCola, data=Thu Sep 20 00:00:00 CEST 2001, kursZamkniecia=48.35}
+3838: ISTREAM : {spolka=PepsiCo, data=Thu Sep 20 00:00:00 CEST 2001, kursZamkniecia=48.76}
+
+
+///////////////////////////////////////////////////
+
+6.
+
+
+/*
+
+"select max(kursZamkniecia) as maksimum" +
+" from KursAkcji().win:ext_timed_batch(data.getTime(), 7 days) " +
+" limit 1 "
+
+*/
+
+8501: ISTREAM : {maksimum=100.35}
+8507: ISTREAM : {maksimum=96.4}
+
+
+///////////////////////////////////////////////////
+
+7. 
+
+/*
+
+
+"select Pepsi.kursZamkniecia as kursPep, CocaCola.kursZamkniecia as kursCoc, Pepsi.data as data" +
+" from KursAkcji(spolka='PepsiCo').win:ext_timed(data.getTime(), 1 days) as Pepsi " +
+"      full outer join " +
+"      KursAkcji(spolka='CocaCola').win:ext_timed(data.getTime(), 1 days) as CocaCola " +
+"      on Pepsi.data = CocaCola.data" +
+" where Pepsi.kursZamkniecia > CocaCola.kursZamkniecia"
+*/
+
+
+8474: ISTREAM : {kursCoc=49.47, data=Tue Sep 18 00:00:00 CEST 2001, kursPep=49.5}
+8480: ISTREAM : {kursCoc=49.5, data=Wed Sep 19 00:00:00 CEST 2001, kursPep=49.59}
+8481: ISTREAM : {kursCoc=48.35, data=Thu Sep 20 00:00:00 CEST 2001, kursPep=48.76}
+
+
+///////////////////////////////////////////////////
+
+7. 
+
+/* 
+
+"select istream k.spolka, k.data, k.kursZamkniecia as  kursBiezacy, " +
+"   k.kursZamkniecia - (select kk.kursZamkniecia from KursAkcji.std:firstunique(spolka) as kk where kk.spolka = k.spolka) as roznica" +
+"   from KursAkcji(spolka='PepsiCo' or spolka='CocaCola').win:ext_timed(data.getTime(), 1 days) as k"
+*/
+
+1048: ISTREAM : {k.data=Wed Sep 05 00:00:00 CEST 2001, kursBiezacy=50.45, k.spolka=CocaCola, roznica=0.0}
+1051: ISTREAM : {k.data=Wed Sep 05 00:00:00 CEST 2001, kursBiezacy=47.8, k.spolka=PepsiCo, roznica=0.0}
+1052: ISTREAM : {k.data=Thu Sep 06 00:00:00 CEST 2001, kursBiezacy=49.51, k.spolka=CocaCola, roznica=-0.94000244}
+1053: ISTREAM : {k.data=Thu Sep 06 00:00:00 CEST 2001, kursBiezacy=47.1, k.spolka=PepsiCo, roznica=-0.70000076}
+1053: ISTREAM : {k.data=Fri Sep 07 00:00:00 CEST 2001, kursBiezacy=49.73, k.spolka=CocaCola, roznica=-0.7200012}
+1054: ISTREAM : {k.data=Fri Sep 07 00:00:00 CEST 2001, kursBiezacy=47.4, k.spolka=PepsiCo, roznica=-0.3999977}
+1054: ISTREAM : {k.data=Mon Sep 10 00:00:00 CEST 2001, kursBiezacy=49.95, k.spolka=CocaCola, roznica=-0.5}
+1055: ISTREAM : {k.data=Mon Sep 10 00:00:00 CEST 2001, kursBiezacy=46.9, k.spolka=PepsiCo, roznica=-0.8999977}
+1056: ISTREAM : {k.data=Mon Sep 17 00:00:00 CEST 2001, kursBiezacy=50.2, k.spolka=CocaCola, roznica=-0.25}
+1057: ISTREAM : {k.data=Mon Sep 17 00:00:00 CEST 2001, kursBiezacy=47.9, k.spolka=PepsiCo, roznica=0.10000229}
+1058: ISTREAM : {k.data=Tue Sep 18 00:00:00 CEST 2001, kursBiezacy=49.47, k.spolka=CocaCola, roznica=-0.97999954}
+1059: ISTREAM : {k.data=Tue Sep 18 00:00:00 CEST 2001, kursBiezacy=49.5, k.spolka=PepsiCo, roznica=1.7000008}
+1060: ISTREAM : {k.data=Wed Sep 19 00:00:00 CEST 2001, kursBiezacy=49.5, k.spolka=CocaCola, roznica=-0.95000076}
+1061: ISTREAM : {k.data=Wed Sep 19 00:00:00 CEST 2001, kursBiezacy=49.59, k.spolka=PepsiCo, roznica=1.7900009}
+1062: ISTREAM : {k.data=Thu Sep 20 00:00:00 CEST 2001, kursBiezacy=48.35, k.spolka=CocaCola, roznica=-2.1000023}
+1062: ISTREAM : {k.data=Thu Sep 20 00:00:00 CEST 2001, kursBiezacy=48.76, k.spolka=PepsiCo, roznica=0.9599991}
+
+
+///////////////////////////////////////////////////
+
+8. 
+
+/*
+
+"select istream k.spolka, k.data, k.kursZamkniecia as  kursBiezacy, " +
+"   k.kursZamkniecia - (select kk.kursZamkniecia from KursAkcji().std:firstunique(spolka) as kk where kk.spolka = k.spolka) as roznica" +
+"   from KursAkcji().win:ext_timed(data.getTime(), 1 days) as k " +
+"   where  k.kursZamkniecia > (select kk.kursZamkniecia from KursAkcji().std:firstunique(spolka) as kk where kk.spolka = k.spolka)"
+
+
+*/
+
+
+
+5212: ISTREAM : {k.data=Thu Sep 06 00:00:00 CEST 2001, kursBiezacy=77.35, k.spolka=Honda, roznica=3.9799957}
+5212: ISTREAM : {k.data=Thu Sep 06 00:00:00 CEST 2001, kursBiezacy=11.1, k.spolka=Yahoo, roznica=0.46000004}
+5217: ISTREAM : {k.data=Fri Sep 07 00:00:00 CEST 2001, kursBiezacy=78.4, k.spolka=Honda, roznica=5.029999}
+5217: ISTREAM : {k.data=Fri Sep 07 00:00:00 CEST 2001, kursBiezacy=10.75, k.spolka=Yahoo, roznica=0.10999966}
+5217: ISTREAM : {k.data=Mon Sep 10 00:00:00 CEST 2001, kursBiezacy=80.12, k.spolka=Honda, roznica=6.75}
+5217: ISTREAM : {k.data=Mon Sep 10 00:00:00 CEST 2001, kursBiezacy=11.74, k.spolka=Yahoo, roznica=1.0999994}
+5222: ISTREAM : {k.data=Mon Sep 17 00:00:00 CEST 2001, kursBiezacy=47.9, k.spolka=PepsiCo, roznica=0.10000229}
+5222: ISTREAM : {k.data=Mon Sep 17 00:00:00 CEST 2001, kursBiezacy=10.88, k.spolka=Yahoo, roznica=0.23999977}
+5222: ISTREAM : {k.data=Tue Sep 18 00:00:00 CEST 2001, kursBiezacy=49.5, k.spolka=PepsiCo, roznica=1.7000008}
+5224: ISTREAM : {k.data=Wed Sep 19 00:00:00 CEST 2001, kursBiezacy=49.59, k.spolka=PepsiCo, roznica=1.7900009}
+5224: ISTREAM : {k.data=Thu Sep 20 00:00:00 CEST 2001, kursBiezacy=48.76, k.spolka=PepsiCo, roznica=0.9599991}
+
+///////////////////////////////////////////////////
+
+9.
+
+/*
+
+"select a.spolka as spolka, a.data as dataA, b.data as dataB, a.kursOtwarcia as kursA, b.kursOtwarcia as kursB" +
+	"   from KursAkcji.win:ext_timed(data.getTime(), 1 days) as a " +
+	"        full outer join KursAkcji.win:ext_timed(data.getTime(), 7 days) as b " +
+	"        on a.spolka = b.spolka " +
+	"        where a.kursOtwarcia - b.kursOtwarcia > 3 or b.kursOtwarcia - a.kursOtwarcia > 3 order by b.data, a.data");
+
+*/
+
+1279: ISTREAM : {dataA=Fri Sep 07 00:00:00 CEST 2001, spolka=Honda, kursA=80.1, kursB=73.5, dataB=Wed Sep 05 00:00:00 CEST 2001}
+1279: ISTREAM : {dataA=Fri Sep 07 00:00:00 CEST 2001, spolka=Honda, kursA=80.1, kursB=76.48, dataB=Thu Sep 06 00:00:00 CEST 2001}
+1279: ISTREAM : {dataA=Fri Sep 07 00:00:00 CEST 2001, spolka=IBM, kursA=97.9, kursB=101.5, dataB=Wed Sep 05 00:00:00 CEST 2001}
+1279: ISTREAM : {dataA=Mon Sep 10 00:00:00 CEST 2001, spolka=Honda, kursA=78.57, kursB=73.5, dataB=Wed Sep 05 00:00:00 CEST 2001}
+1279: ISTREAM : {dataA=Mon Sep 10 00:00:00 CEST 2001, spolka=IBM, kursA=96.0, kursB=101.5, dataB=Wed Sep 05 00:00:00 CEST 2001}
+1279: ISTREAM : {dataA=Mon Sep 10 00:00:00 CEST 2001, spolka=IBM, kursA=96.0, kursB=100.68, dataB=Thu Sep 06 00:00:00 CEST 2001}
+1294: ISTREAM : {dataA=Thu Sep 20 00:00:00 CEST 2001, spolka=Honda, kursA=61.99, kursB=66.25, dataB=Mon Sep 17 00:00:00 CEST 2001}
+1294: ISTREAM : {dataA=Thu Sep 20 00:00:00 CEST 2001, spolka=Honda, kursA=61.99, kursB=65.5, dataB=Tue Sep 18 00:00:00 CEST 2001}
+
+///////////////////////////////////////////////////
+
+10. 
+
+/*
+
+"select data, spolka, obrot " +
+" from KursAkcji(market='NYSE').win:ext_timed_batch(data.getTime(), 7 days) " +
+" order by obrot desc limit 3"
+
+ */
+
+
+6756: ISTREAM : {spolka=Ford, data=Fri Sep 07 00:00:00 CEST 2001, obrot=9270400.0}
+6756: ISTREAM : {spolka=Disney, data=Fri Sep 07 00:00:00 CEST 2001, obrot=8694600.0}
+6756: ISTREAM : {spolka=Ford, data=Thu Sep 06 00:00:00 CEST 2001, obrot=8138500.0}
+6763: ISTREAM : {spolka=Disney, data=Mon Sep 17 00:00:00 CEST 2001, obrot=4.62337E7}
+6763: ISTREAM : {spolka=Disney, data=Tue Sep 18 00:00:00 CEST 2001, obrot=2.31388E7}
+6763: ISTREAM : {spolka=PepsiCo, data=Tue Sep 18 00:00:00 CEST 2001, obrot=1.85115E7}
+
+
+////////////
+
+11.
+
+/*
+
+"select data, spolka, obrot " +
+" from KursAkcji(market='NYSE').win:ext_timed_batch(data.getTime(), 7 days) " +
+" order by obrot desc limit 1 offset 2"
+
+*/
+
+
+
+4127: ISTREAM : {spolka=Ford, data=Thu Sep 06 00:00:00 CEST 2001, obrot=8138500.0}
+4137: ISTREAM : {spolka=PepsiCo, data=Tue Sep 18 00:00:00 CEST 2001, obrot=1.85115E7}
+
+
