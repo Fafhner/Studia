@@ -1,0 +1,52 @@
+{
+
+   "accept=application/json",
+
+   "accept-encoding=gzip",
+
+   "deflate",
+
+   "accept-language=pl",
+
+   en-US;q=0.7,
+
+   en;q=0.3,
+
+   CamelHttpCharacterEncoding=UTF-8,
+
+   "CamelHttpMethod=POST",
+
+   "CamelHttpPath=",
+
+   "CamelHttpQuery=null",
+
+   CamelHttpServletRequest=org.springframework.web.servlet.resource.ResourceUrlEncodingFilter$ResourceUrlEncodingRequestWrapper@23497611,
+
+   CamelHttpServletResponse=org.springframework.web.servlet.resource.ResourceUrlEncodingFilter$ResourceUrlEncodingResponseWrapper@59553e0c,
+
+   "CamelHttpUri=/api/shop/items",
+
+   "CamelHttpUrl=http"::8090/api/shop/items,
+
+   "CamelServletContextPath=/shop/items",
+
+   "connection=keep-alive",
+
+   content-length=522,
+
+   "Content-Type=application/json",
+
+   cookie=username-localhost-8888="2|1:0|10:1610963887|23:username-localhost-8888|44:MWFhZDllNTZmNWFlNDI2NWE4OWQzZGQyZDhmZDJkMWQ=|ad36cc5f8c3229732c6b87f092024a2e350d65e50eb58697c5dde48899cd7318"; _xsrf=2|852e18c4|be0997083fa10189cc8d7d9c569c3617|1610963887,
+
+   "host=localhost":8090,
+
+   "origin=http"::8090,
+
+   "referer=http"::8090/webjars/swagger-ui/index.html?url=/api/api-doc&validatorUrl=,
+
+   shopBasketId=1,
+
+   "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv":84.0) Gecko/20100101 Firefox/84.0
+
+}
+
