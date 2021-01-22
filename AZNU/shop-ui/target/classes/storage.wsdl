@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='UTF-8'?><wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns2="http://www.bp.org" xmlns:ns1="http://www.bp.org/storage/" name="ItemsPurchasing" targetNamespace="http://www.bp.org/storage/">
+  <wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.bp.org/types" version="1.0">
+
+  <xs:complexType name="StorageItem">
+    <xs:sequence>
+      <xs:element name="itemName" type="xs:string"/>
+      <xs:element name="itemId" type="xs:int"/>
+      <xs:element name="price" type="xs:float"/>
+      <xs:element name="count" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Person">
+    <xs:sequence>
+      <xs:element name="firstName" type="xs:string"/>
+      <xs:element name="lastName" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="StorageInfo">
+    <xs:sequence>
+      <xs:element name="id" type="xs:int"/>
+      <xs:element name="cost" type="xs:float"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Fault">
+    <xs:sequence>
+      <xs:element name="code" type="xs:int"/>
+      <xs:element name="text" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://www.bp.org/types" elementFormDefault="qualified" targetNamespace="http://www.bp.org" version="1.0">
+
+  <xs:import namespace="http://www.bp.org/types"/>
+
+  <xs:element name="cancelPurchasingRequest">
+    <xs:complexType>
+      <xs:sequence/>
+      <xs:attribute name="purchaseId" type="xs:int"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="cancelPurchasingResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="canceled" type="xs:boolean"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="getItemsRequest" type="xs:anyType"/>
+
+  <xs:element name="getItemsResponse">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" minOccurs="0" name="items" nillable="true" type="ns1:StorageItem"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="purchaseItemsRequest">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" minOccurs="0" name="items" nillable="true" type="ns1:StorageItem"/>
+        <xs:element name="person" type="ns1:Person"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="purchaseItemsResponse" type="ns1:StorageInfo"/>
+
+  <xs:element name="storageFault" type="ns1:Fault"/>
+
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="StorageFaultMsg">
+    <wsdl:part element="ns2:storageFault" name="StorageFaultMsg">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getItems">
+    <wsdl:part element="ns2:getItemsRequest" name="payload">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getItemsResponse">
+    <wsdl:part element="ns2:getItemsResponse" name="payload">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="purchaseItemsResponse">
+    <wsdl:part element="ns2:purchaseItemsResponse" name="payload">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="purchaseItems">
+    <wsdl:part element="ns2:purchaseItemsRequest" name="payload">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelPurchasingResponse">
+    <wsdl:part element="ns2:cancelPurchasingResponse" name="payload">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="cancelPurchasing">
+    <wsdl:part element="ns2:cancelPurchasingRequest" name="payload">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ItemsPurchasing">
+    <wsdl:operation name="purchaseItems">
+      <wsdl:input message="ns1:purchaseItems" name="purchaseItems">
+    </wsdl:input>
+      <wsdl:output message="ns1:purchaseItemsResponse" name="purchaseItemsResponse">
+    </wsdl:output>
+      <wsdl:fault message="ns1:StorageFaultMsg" name="StorageFaultMsg">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="cancelPurchasing">
+      <wsdl:input message="ns1:cancelPurchasing" name="cancelPurchasing">
+    </wsdl:input>
+      <wsdl:output message="ns1:cancelPurchasingResponse" name="cancelPurchasingResponse">
+    </wsdl:output>
+      <wsdl:fault message="ns1:StorageFaultMsg" name="StorageFaultMsg">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getItems">
+      <wsdl:input message="ns1:getItems" name="getItems">
+    </wsdl:input>
+      <wsdl:output message="ns1:getItemsResponse" name="getItemsResponse">
+    </wsdl:output>
+      <wsdl:fault message="ns1:StorageFaultMsg" name="StorageFaultMsg">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+</wsdl:definitions>
