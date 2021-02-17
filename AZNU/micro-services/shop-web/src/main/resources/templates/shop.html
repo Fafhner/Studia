@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Shop</title>
+</head>
+<body>
+
+<form action="#" th:action="@{/shop/result}" th:object="${request}" method="post">
+    <h3>Dane osobowe: </h3>
+    <div>
+        <p><label>Name</label></p>
+        <p><input th:field="*{person.name}" /></p>
+
+<!--        <p><label>Surname</label></p>-->
+        <p><input th:field="*{person.surname}"  hidden/></p>
+
+<!--        <p><label>Telephone</label></p>-->
+        <p><input th:field="*{person.telephone}"  hidden/></p>
+
+<!--        <p><label>email</label></p>-->
+        <p><input th:field="*{person.email}"  hidden/></p>
+
+<!--        <p><label>Address</label></p>-->
+        <p><input th:field="*{person.address.country}"  hidden/></p>
+
+<!--        <p><label>Address</label></p>-->
+        <p><input th:field="*{person.address.city}"  hidden/></p>
+
+        <p><label>Address</label></p>
+        <p><input th:field="*{person.address.address}" /></p>
+
+<!--        <p><label>Address</label></p>-->
+        <p><input th:field="*{person.address.postcode}" hidden/></p>
+
+    </div>
+
+
+    <h3>Wybierz typ zapłaty: </h3>
+    <select id="SST" onchange="payment()" th:field="*{paymentType}">
+        <option value="creditCard">Karta</option>
+        <option value="blikCode">Blik</option>
+    </select>
+    <div id="creditCard">
+        <p><label>Credit Card Number</label></p>
+        <p><input th:field="*{paymentCard.number}"/></p>
+
+        <p><label>Valid to:</label></p>
+        <p><input th:field="*{paymentCard.validTo}"/></p>
+
+        <p><label>CVC</label></p>
+        <p><input th:field="*{paymentCard.name}"/></p>
+    </div>
+
+    <div id="blikCode">
+        <p><label>Blik code</label></p>
+        <p><input th:field="*{paymentBlik.blinkCode}"/></p>
+    </div>
+
+    <h3>Wybierz typ przesyłki:</h3>
+    <div>
+        <select th:field="*{courierType}">
+            <option value="courier">Kurier</option>
+            <option value="locker">Paczkomat</option>
+        </select>
+    </div>
+
+    <h3>Koszyk: </h3>
+    <table>
+        <thead>
+            <tr>
+                <td>Name:</td>
+                <td>Price:</td>
+                <td>In stock:</td>
+                <td>Buy:</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="itemData, stat : *{items}">
+                <td th:text="${itemData.item.itemName}">
+                <td th:text="${itemData.item.price}" />
+                <td th:text="${itemData.item.count}" />
+                <td><input type="number" th:field="*{items[__${stat.index}__].size}"></td>
+
+                <input  th:field="*{items[__${stat.index}__].item.itemName}" hidden>
+                <input  th:field="*{items[__${stat.index}__].item.itemId}" hidden>
+                <input  th:field="*{items[__${stat.index}__].item.price}" hidden>
+                <input  th:field="*{items[__${stat.index}__].item.count}" hidden>
+
+            </tr>
+        </tbody>
+    </table>
+
+    <p><input type="submit" value="Submit" /></p>
+</form>
+
+<script>
+    function payment() {
+      var type = document.getElementById("SST").value;
+      if(type === "Blik") {
+        document.getElementById("blikForm").style.display = "";
+        document.getElementById("kartaForm").style.display = "none";
+      }
+      else if(type === "Karta") {
+        document.getElementById("blikForm").style.display = "none";
+        document.getElementById("kartaForm").style.display = "";
+      }
+      else {
+        document.getElementById("blikForm").style.display = "none";
+        document.getElementById("kartaForm").style.display = "none";
+      }
+
+    }
+
+    payment()
+</script>
+</body>
+
+<script>
+    function payment() {
+      var type = document.getElementById("SST").value;
+      if(type === "blikCode") {
+        document.getElementById("blikCode").style.display = "";
+        document.getElementById("creditCard").style.display = "none";
+      }
+      else if(type === "creditCard") {
+        document.getElementById("blikCode").style.display = "none";
+        document.getElementById("creditCard").style.display = "";
+      }
+      else {
+        document.getElementById("blikCode").style.display = "none";
+        document.getElementById("creditCard").style.display = "none";
+      }
+
+    }
+
+    payment()
+</script>
+</html>

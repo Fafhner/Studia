@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" 
+	targetNamespace="http://www.bp.org" 
+	xmlns:tns="http://www.bp.org" 
+	elementFormDefault="qualified"
+	xmlns:bpt="http://www.bp.org/types">
+	<import schemaLocation="bpTypes.xsd" namespace="http://www.bp.org/types"/>
+	<element name="purchaseItemsRequest">
+		<complexType>
+		  <sequence>
+			  <element name="items" type="bpt:StorageItem" maxOccurs="unbounded" minOccurs="0" nillable="true"/>
+			  <element name="person" type="bpt:Person"/>
+		  </sequence>
+		</complexType>
+	</element>
+	<element name="purchaseItemsResponse" type="bpt:StorageInfo" />
+
+
+	<element name="cancelPurchasingRequest">
+		<complexType>
+			<attribute name="purchaseId" type="int"/>
+		</complexType>
+	</element>
+
+	<element name="cancelPurchasingResponse" >
+        <complexType>
+			<sequence>
+            	<element name="canceled" type="boolean"/>
+			</sequence>
+        </complexType>
+    </element>
+
+	<element name="getItemsRequest"/>
+	<element name="getItemsResponse">
+		<complexType>
+			<sequence>
+				<element name="items" type="bpt:StorageItem" maxOccurs="unbounded" minOccurs="0" nillable="true"/>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="storageFault" type="bpt:Fault"/>
+</schema>

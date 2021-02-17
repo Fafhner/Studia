@@ -1,0 +1,13 @@
+org\bp\courier\CustomizedResponseEntityExceptionHandler.class
+org\bp\courier\model\CourierGetTypesResponse.class
+org\bp\courier\model\CancelRequest.class
+org\bp\courier\model\CourierTypes.class
+org\bp\courier\CourierService.class
+org\bp\courier\model\Address.class
+org\bp\courier\model\CourierRequest.class
+org\bp\courier\CourierApplication.class
+org\bp\courier\model\CancelResponse.class
+org\bp\courier\ExceptionResponse.class
+org\bp\courier\model\Person.class
+org\bp\courier\model\CourierResponse.class
+org\bp\courier\model\CourierException.class

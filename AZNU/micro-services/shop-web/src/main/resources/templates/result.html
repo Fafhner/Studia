@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice</title>
+</head>
+<body>
+
+<h1>Invoice</h1>
+
+<h3>Invoice id:</h3>
+<input readonly th:value="${note.purchaseId}">
+<h3>Storage id:</h3>
+<input readonly th:value="${note.storageId}">
+
+<h3>Shipping id:</h3>
+<input readonly th:value="${note.shippingTransactionId}">
+<h3>Shipping cost:</h3>
+<input readonly th:value="${note.shippingTransactionCost}">
+<h3>Expected delivery time:</h3>
+<input readonly th:value="${note.shippingTransactionDeliveryTime}">
+
+<h3>Payment id:</h3>
+<input readonly th:value="${note.paymentTransactionId}">
+<h3>Payed on:</h3>
+<input readonly th:value="${note.paymentTransactionDate}">
+
+<table>
+    <thead>
+    <tr>
+        <td>Name:</td>
+        <td>Price:</td>
+        <td>Count:</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="itemData, stat : *{note.items}">
+        <td th:text="${itemData.itemName}">
+        <td th:text="${itemData.price}" />
+        <td th:text="${itemData.count}" />
+    </tr>
+    </tbody>
+</table>
+
+<h3>Products cost:</h3>
+<input readonly th:value="${note.paymentTransactionDate}">
+
+<h3>Total cost:</h3>
+<input readonly th:value="${note.paymentTransactionSummaryCost}">
+
+</body>
+</html>
